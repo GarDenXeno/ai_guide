@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI資料作成ガイド（導入・実践・応用）</title>
+<style>
+  :root{
+    --dark:#0B3C40; --teal:#028090; --sea:#00A896; --mint:#02C39A;
+    --slate:#50808E; --amber:#D99100; --coral:#F2784B; --coral-bg:#FCEAE1;
+    --tint:#EAF6F5; --tint2:#F4FAFA; --white:#FFFFFF;
+    --text:#1A2E35; --muted:#5C7079; --line:#E2EDED;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{background:#06292c;
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","YuGothic",Meiryo,"Noto Sans JP",sans-serif;
+    color:var(--text); display:flex; align-items:center; justify-content:center; min-height:100vh; overflow:hidden; -webkit-font-smoothing:antialiased;}
+  .stage{position:relative; width:min(100vw,177.78vh); aspect-ratio:16/9; box-shadow:0 24px 80px rgba(0,0,0,.45); border-radius:6px; overflow:hidden; background:var(--white);}
+  .slide{container-type:size; position:absolute; inset:0; padding:5cqw 5cqw; display:flex; flex-direction:column;
+    opacity:0; visibility:hidden; transform:translateY(1.2cqw);
+    transition:opacity .45s ease, transform .45s ease, visibility .45s; overflow:hidden;}
+  .slide.active{opacity:1; visibility:visible; transform:none;}
+  @media (prefers-reduced-motion:reduce){ .slide{transition:opacity .2s ease; transform:none;} }
+
+  .eyebrow{color:var(--teal); font-weight:700; letter-spacing:.16em; font-size:1.2cqw; margin-bottom:.6cqw;}
+  .h-title{font-size:3.3cqw; font-weight:700; color:var(--text); line-height:1.18;}
+  .lead{font-size:1.4cqw; color:var(--muted); line-height:1.5; margin-top:1cqw;}
+  .badge{border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none; box-shadow:0 .5cqw 1.2cqw rgba(0,0,0,.14);}
+  .badge svg{width:55%; height:55%; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round;}
+  .blob{position:absolute; border-radius:50%; pointer-events:none;}
+  .card{background:var(--tint2); border-radius:1.1cqw; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.10);}
+
+  /* ===================== COVER / TOC ===================== */
+  #c0{background:var(--dark); justify-content:center;}
+  #c0 .blob.a{width:34cqw;height:34cqw;top:-13cqw;right:-7cqw;background:rgba(2,128,144,.30);}
+  #c0 .blob.b{width:26cqw;height:26cqw;bottom:-10cqw;left:-8cqw;background:rgba(2,195,154,.20);}
+  #c0 .eyebrow{color:var(--mint); font-size:1.3cqw; margin-bottom:1.4cqw;}
+  #c0 h1{font-size:4.4cqw; font-weight:700; color:#fff; line-height:1.15;}
+  #c0 .sub{font-size:1.5cqw; color:#CFE6E4; line-height:1.5; margin-top:1.6cqw;}
+  #c0 .toc{display:grid; grid-template-columns:repeat(3,1fr); gap:2cqw; margin-top:3.2cqw;}
+  #c0 .tcard{background:rgba(255,255,255,.06); border:.15cqw solid rgba(255,255,255,.16); border-radius:1.2cqw;
+             padding:2.2cqw; cursor:pointer; text-align:left; display:flex; flex-direction:column;
+             transition:transform .15s ease, background .15s ease, border-color .15s ease; font-family:inherit;}
+  #c0 .tcard:hover{transform:translateY(-.45cqw); background:rgba(255,255,255,.12); border-color:var(--mint);}
+  #c0 .tcard:focus-visible{outline:.22cqw solid var(--mint); outline-offset:.2cqw;}
+  #c0 .tnum{width:4.6cqw;height:4.6cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.9cqw;color:#fff;margin-bottom:1.3cqw;}
+  #c0 .tcard:nth-child(1) .tnum{background:var(--teal);}
+  #c0 .tcard:nth-child(2) .tnum{background:var(--sea);}
+  #c0 .tcard:nth-child(3) .tnum{background:var(--mint);}
+  #c0 .tlabel{font-size:1cqw; font-weight:700; letter-spacing:.12em; color:var(--mint);}
+  #c0 .tt{font-size:2cqw; font-weight:700; color:#fff; margin-top:.3cqw;}
+  #c0 .td{font-size:1.18cqw; color:#A7C6C4; line-height:1.5; margin-top:1cqw;}
+  #c0 .tgo{font-size:1.15cqw; color:var(--mint); font-weight:700; margin-top:auto; padding-top:1.3cqw;}
+  #c0 .chint{font-size:1.1cqw; color:#7FA6A4; margin-top:2.4cqw;}
+
+  /* ===================== 導入編 (i1–i7) ===================== */
+  #i1{background:var(--dark); justify-content:center;}
+  #i1 .blob.a{width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(2,128,144,.30);}
+  #i1 .blob.b{width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(2,195,154,.22);}
+  #i1 .eyebrow{color:var(--mint); font-size:1.3cqw; margin-bottom:2.2cqw;}
+  #i1 h1{font-size:5.2cqw; font-weight:700; color:#fff; line-height:1.14;}
+  #i1 .sub{font-size:1.7cqw; color:#CFE6E4; line-height:1.5; margin-top:3cqw; max-width:72cqw;}
+  #i1 .tag{font-size:1.25cqw; color:#9FC3C1; font-style:italic; margin-top:4cqw;}
+  #i1 .badge{position:absolute; width:8.8cqw; height:8.8cqw; right:9.5cqw; top:33cqw; background:var(--teal);}
+  #i1 .badge svg{stroke:#fff;}
+
+  #i2 .cards{display:grid; grid-template-columns:1fr 1fr; gap:2.6cqw; margin-top:3cqw;}
+  #i2 .card{padding:2.6cqw;}
+  #i2 .card .badge{width:7.4cqw; height:7.4cqw; background:#fff; margin-bottom:1.4cqw;}
+  #i2 .card .ct{font-size:2.1cqw; font-weight:700; color:var(--text); margin-bottom:.9cqw;}
+  #i2 .card .cd{font-size:1.4cqw; color:var(--muted); line-height:1.55;}
+  #i2 .card:nth-child(1) .badge svg{stroke:var(--teal);}
+  #i2 .card:nth-child(2) .badge svg{stroke:var(--sea);}
+
+  #i3 .row{display:flex; align-items:stretch; gap:2cqw; margin-top:2.4cqw; flex:1;}
+  #i3 .col{flex:1; border-radius:1.1cqw; padding:2.4cqw; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.10);}
+  #i3 .before{background:var(--tint2);} #i3 .after{background:var(--tint); flex:.92;}
+  #i3 .chead{display:flex; align-items:center; gap:1.2cqw; margin-bottom:1.6cqw;}
+  #i3 .badge{width:5cqw; height:5cqw;}
+  #i3 .before .badge{background:var(--coral-bg);} #i3 .before .badge svg{stroke:var(--coral);}
+  #i3 .after .badge{background:#fff;} #i3 .after .badge svg{stroke:var(--teal);}
+  #i3 .clabel{font-size:1.9cqw; font-weight:700;}
+  #i3 .before .clabel{color:var(--coral);} #i3 .after .clabel{color:var(--teal);}
+  #i3 ul{list-style:none; display:flex; flex-direction:column; gap:1.15cqw;}
+  #i3 li{font-size:1.5cqw; color:var(--text); line-height:1.4; display:flex; gap:1cqw; align-items:flex-start;}
+  #i3 li .ic{width:1.9cqw; height:1.9cqw; flex:none; margin-top:.25cqw;}
+  #i3 li .ic svg{width:100%; height:100%; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
+  #i3 .before li .ic svg{stroke:var(--coral);} #i3 .after li .ic svg{stroke:var(--teal);}
+  #i3 .arrow{align-self:center; flex:none;}
+  #i3 .arrow .badge{width:5.4cqw;height:5.4cqw;background:var(--teal);}
+  #i3 .arrow .badge svg{stroke:#fff;}
+
+  #i4 .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:2cqw; margin-top:3cqw; flex:1;}
+  #i4 .step{position:relative; padding:2.3cqw; display:flex; flex-direction:column;}
+  #i4 .num{width:6.2cqw;height:6.2cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:3cqw;font-weight:700;box-shadow:0 .5cqw 1.2cqw rgba(0,0,0,.16);}
+  #i4 .step .mini{position:absolute; top:2.5cqw; right:2.3cqw; width:3.6cqw; height:3.6cqw;}
+  #i4 .step .mini svg{width:100%;height:100%;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  #i4 .step .sl{font-size:1.05cqw; font-weight:700; letter-spacing:.16em; margin-top:1.5cqw;}
+  #i4 .step .st{font-size:1.85cqw; font-weight:700; color:var(--text); margin-top:.5cqw;}
+  #i4 .step .sd{font-size:1.35cqw; color:var(--muted); line-height:1.5; margin-top:.8cqw;}
+  #i4 .step.c1 .num{background:var(--teal);} #i4 .step.c1 .sl{color:var(--teal);} #i4 .step.c1 .mini svg{stroke:var(--teal);}
+  #i4 .step.c2 .num{background:var(--sea);}  #i4 .step.c2 .sl{color:var(--sea);}  #i4 .step.c2 .mini svg{stroke:var(--sea);}
+  #i4 .step.c3 .num{background:var(--mint);} #i4 .step.c3 .sl{color:var(--mint);} #i4 .step.c3 .mini svg{stroke:var(--mint);}
+
+  #i5 .ex{display:flex; flex-direction:column; gap:1.4cqw; margin-top:2.4cqw; flex:1;}
+  #i5 .item{display:flex; align-items:center; gap:1.6cqw; background:var(--tint2); border-radius:.9cqw; padding:1.5cqw 2cqw; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.09);}
+  #i5 .badge{width:5cqw;height:5cqw;background:#fff;} #i5 .badge svg{stroke:var(--teal);}
+  #i5 .tag{font-size:1.2cqw; font-weight:700; color:var(--teal); margin-bottom:.5cqw;}
+  #i5 .q{font-size:1.42cqw; color:var(--text); line-height:1.4;}
+
+  #i6 .tips{display:grid; grid-template-columns:repeat(3,1fr); gap:2cqw; margin-top:3cqw; flex:1;}
+  #i6 .tip{background:var(--tint); border-radius:1.1cqw; padding:2.4cqw; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.10); display:flex; flex-direction:column;}
+  #i6 .tip .badge{width:6.4cqw;height:6.4cqw;background:#fff; margin-bottom:1.6cqw;}
+  #i6 .tip.t1 .badge svg{stroke:var(--teal);} #i6 .tip.t2 .badge svg{stroke:var(--sea);} #i6 .tip.t3 .badge svg{stroke:var(--mint);}
+  #i6 .tt{font-size:1.85cqw; font-weight:700; color:var(--text); margin-bottom:.8cqw;}
+  #i6 .td{font-size:1.4cqw; color:var(--muted); line-height:1.55;}
+
+  #i7{background:var(--dark); align-items:center; justify-content:center; text-align:center;}
+  #i7 .blob.a{width:30cqw;height:30cqw;bottom:-10cqw;left:-10cqw;background:rgba(2,128,144,.28);}
+  #i7 .blob.b{width:26cqw;height:26cqw;top:-9cqw;right:-7cqw;background:rgba(2,195,154,.22);}
+  #i7 .badge{width:8.6cqw;height:8.6cqw;background:var(--teal); margin:0 auto;} #i7 .badge svg{stroke:#fff;}
+  #i7 h2{font-size:4.6cqw; font-weight:700; color:#fff; margin-top:2.2cqw;}
+  #i7 .sub{font-size:1.85cqw; color:#CFE6E4; line-height:1.5; margin-top:1.8cqw;}
+  #i7 .pill{display:inline-block; margin-top:2.8cqw; background:var(--mint); color:var(--dark); font-weight:700; font-size:1.55cqw; padding:1cqw 3cqw; border-radius:5cqw; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.2);}
+
+  /* ===================== 実践編 (p1–p12) ===================== */
+  #p1{background:var(--dark); justify-content:center;}
+  #p1 .blob.a{width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(2,128,144,.30);}
+  #p1 .blob.b{width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(2,195,154,.22);}
+  #p1 .eyebrow{color:var(--mint); font-size:1.3cqw; margin-bottom:2.2cqw;}
+  #p1 h1{font-size:4.8cqw; font-weight:700; color:#fff; line-height:1.16;}
+  #p1 .sub{font-size:1.7cqw; color:#CFE6E4; line-height:1.5; margin-top:2.8cqw; max-width:74cqw;}
+  #p1 .tag{font-size:1.25cqw; color:#9FC3C1; font-style:italic; margin-top:3.8cqw;}
+  #p1 .badge{position:absolute; width:8.6cqw; height:8.6cqw; right:9cqw; top:34cqw; background:var(--teal);}
+  #p1 .badge svg{stroke:#fff;}
+
+  #p2 .map{display:flex; align-items:stretch; gap:1.6cqw; margin-top:3.4cqw; flex:1;}
+  #p2 .lvl{flex:1; border-radius:1.1cqw; padding:2.2cqw; display:flex; flex-direction:column; position:relative;}
+  #p2 .lvl .k{font-size:1.05cqw; font-weight:700; letter-spacing:.14em;}
+  #p2 .lvl .t{font-size:2.1cqw; font-weight:700; margin-top:.7cqw;}
+  #p2 .lvl .d{font-size:1.25cqw; line-height:1.5; margin-top:1cqw;}
+  #p2 .lvl.done{background:var(--tint2); color:var(--muted);} #p2 .lvl.done .k{color:var(--sea);} #p2 .lvl.done .t{color:var(--text);}
+  #p2 .lvl.now{background:var(--dark); color:#CFE6E4; box-shadow:0 1cqw 2.4cqw rgba(11,60,64,.3);} #p2 .lvl.now .k{color:var(--mint);} #p2 .lvl.now .t{color:#fff;}
+  #p2 .lvl.next{background:#fff; border:.18cqw dashed var(--line); color:var(--muted);} #p2 .lvl.next .k{color:var(--slate);} #p2 .lvl.next .t{color:var(--text);}
+  #p2 .pin{position:absolute; top:-1.1cqw; left:2.2cqw; background:var(--mint); color:var(--dark); font-size:.95cqw; font-weight:700; padding:.4cqw 1cqw; border-radius:1cqw;}
+
+  #p3 .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.8cqw; margin-top:3.2cqw; flex:1;}
+  #p3 .it{display:flex; flex-direction:column; background:var(--tint2); border-radius:1.1cqw; padding:2.4cqw 2.1cqw; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.08);}
+  #p3 .n{width:5cqw;height:5cqw;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:2.2cqw;margin-bottom:1.5cqw;box-shadow:0 .4cqw 1cqw rgba(0,0,0,.14);}
+  #p3 .it:nth-child(1) .n{background:var(--teal);} #p3 .it:nth-child(2) .n{background:var(--sea);} #p3 .it:nth-child(3) .n{background:var(--mint);}
+  #p3 .tt{font-size:1.95cqw; font-weight:700; color:var(--text);}
+  #p3 .dd{font-size:1.25cqw; color:var(--muted); margin-top:.7cqw; line-height:1.55;}
+
+  #p4 .tools{display:flex; flex-direction:column; gap:1cqw; margin-top:1.6cqw; flex:1;}
+  #p4 a.tool{display:flex; align-items:center; gap:1.5cqw; background:var(--tint2); border-radius:.8cqw; padding:1.15cqw 1.6cqw; box-shadow:0 .4cqw 1.2cqw rgba(0,0,0,.07); text-decoration:none; color:inherit; transition:transform .15s ease, box-shadow .15s ease;}
+  #p4 a.tool:hover{transform:translateY(-.35cqw); box-shadow:0 1cqw 2cqw rgba(0,0,0,.13);}
+  #p4 a.tool:focus-visible{outline:.2cqw solid var(--teal); outline-offset:.2cqw;}
+  #p4 .ini{width:4cqw;height:4cqw;border-radius:.8cqw;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.1cqw;box-shadow:0 .3cqw .8cqw rgba(0,0,0,.18);}
+  #p4 .nm{font-size:1.5cqw; font-weight:700; color:var(--text); width:13cqw; flex:none; display:flex; align-items:center; gap:.5cqw;}
+  #p4 .ext{font-size:1.05cqw; color:var(--teal);}
+  #p4 .ds{font-size:1.25cqw; color:var(--muted); line-height:1.4;} #p4 .ds b{color:var(--text);}
+  #p4 .foot{font-size:1.1cqw; color:var(--teal); font-weight:600; margin-top:1.2cqw;} #p4 .foot span{color:var(--muted); font-weight:400;}
+
+  #p5 .qs{display:grid; grid-template-columns:repeat(3,1fr); gap:1.8cqw; margin-top:2.6cqw; flex:1;}
+  #p5 .q{background:var(--tint2); border-radius:1cqw; padding:2.1cqw; display:flex; flex-direction:column; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.08);}
+  #p5 .q .badge{width:5.4cqw;height:5.4cqw;background:#fff; margin-bottom:1.3cqw;}
+  #p5 .q:nth-child(1) .badge svg{stroke:var(--teal);} #p5 .q:nth-child(2) .badge svg{stroke:var(--sea);} #p5 .q:nth-child(3) .badge svg{stroke:var(--amber);}
+  #p5 .q .qt{font-size:1.65cqw; font-weight:700; color:var(--text); margin-bottom:.7cqw;}
+  #p5 .q .qd{font-size:1.2cqw; color:var(--muted); line-height:1.5;}
+  #p5 .twotype{background:var(--dark); border-radius:.9cqw; padding:1.5cqw 2cqw; margin-top:1.8cqw; color:#CFE6E4; font-size:1.2cqw; line-height:1.5;} #p5 .twotype b{color:var(--mint);}
+
+  #p6 .wrap{display:flex; gap:2.4cqw; margin-top:2cqw; flex:1; min-height:0;}
+  #p6 .parts{flex:1.05; display:flex; flex-direction:column; gap:.95cqw; justify-content:center;}
+  #p6 .part{display:flex; align-items:center; gap:1.1cqw; background:var(--tint2); border-radius:.7cqw; padding:.85cqw 1.2cqw;}
+  #p6 .chip{font-size:1cqw; font-weight:700; color:#fff; padding:.35cqw .9cqw; border-radius:.5cqw; flex:none; min-width:9.5cqw; text-align:center;}
+  #p6 .frag{font-size:1.2cqw; color:var(--text); line-height:1.35;}
+  #p6 .built{flex:.95; background:var(--dark); border-radius:1cqw; padding:2cqw; display:flex; flex-direction:column; justify-content:center; box-shadow:0 1cqw 2.4cqw rgba(11,60,64,.3);}
+  #p6 .built .bl{font-size:1.05cqw; font-weight:700; letter-spacing:.12em; color:var(--mint); margin-bottom:1cqw;}
+  #p6 .built .sent{font-size:1.35cqw; line-height:1.75; color:#EAF6F5;}
+  #p6 .e1{color:#5BC8D8;} #p6 .e2{color:#4FD6BE;} #p6 .e3{color:#7DECC8;} #p6 .e4{color:#F2C14E;} #p6 .e5{color:#A8C7CF;}
+
+  #p7 .cmp{display:flex; gap:2cqw; margin-top:2.2cqw; flex:1;}
+  #p7 .col{flex:1; border-radius:1cqw; padding:2cqw; display:flex; flex-direction:column;}
+  #p7 .bad{background:var(--tint2); border:.16cqw solid #F3D9CE;} #p7 .good{background:var(--tint); border:.16cqw solid #BFE4E0;}
+  #p7 .ch{display:flex; align-items:center; gap:1cqw; margin-bottom:1.2cqw;}
+  #p7 .ch .badge{width:3.6cqw;height:3.6cqw;}
+  #p7 .bad .badge{background:#FCEAE1;} #p7 .bad .badge svg{stroke:var(--coral);}
+  #p7 .good .badge{background:#fff;} #p7 .good .badge svg{stroke:var(--teal);}
+  #p7 .cl{font-size:1.6cqw; font-weight:700;} #p7 .bad .cl{color:var(--coral);} #p7 .good .cl{color:var(--teal);}
+  #p7 .quote{font-size:1.3cqw; line-height:1.5; color:var(--text); background:#fff; border-radius:.6cqw; padding:1.2cqw; flex:none;}
+  #p7 .good .quote{box-shadow:0 .4cqw 1.2cqw rgba(2,128,144,.12);}
+  #p7 .why{font-size:1.15cqw; color:var(--muted); margin-top:1.1cqw; line-height:1.45;} #p7 .why b{color:var(--text);}
+
+  #p8 .aud{display:grid; grid-template-columns:1fr 1fr; gap:1.5cqw; margin-top:2.2cqw; flex:1;}
+  #p8 .a{border-radius:1cqw; padding:1.7cqw 2cqw; display:flex; flex-direction:column;}
+  #p8 .a .ah{display:flex; align-items:center; gap:1cqw; margin-bottom:.7cqw;}
+  #p8 .a .badge{width:3.6cqw;height:3.6cqw;background:#fff;}
+  #p8 .a .at{font-size:1.55cqw; font-weight:700; color:var(--text);}
+  #p8 .a .ad{font-size:1.2cqw; color:var(--muted); line-height:1.45;}
+  #p8 .a1{background:var(--tint);} #p8 .a1 .badge svg{stroke:var(--teal);}
+  #p8 .a2{background:var(--tint2);} #p8 .a2 .badge svg{stroke:var(--sea);}
+  #p8 .a3{background:var(--tint2);} #p8 .a3 .badge svg{stroke:var(--mint);}
+  #p8 .a4{background:var(--tint);} #p8 .a4 .badge svg{stroke:var(--slate);}
+  #p8 .tieback{font-size:1.2cqw; color:var(--teal); font-weight:600; margin-top:1.5cqw; text-align:center;}
+
+  #p9 .tpl{background:var(--dark); border-radius:1.1cqw; padding:2.6cqw 2.8cqw; margin-top:2.2cqw; flex:1; box-shadow:0 1cqw 2.4cqw rgba(11,60,64,.3); display:flex; flex-direction:column; justify-content:center;}
+  #p9 .tpl p{font-size:1.55cqw; line-height:2.05; color:#EAF6F5;}
+  #p9 .ph{background:rgba(2,195,154,.22); color:#9DECCD; font-weight:700; padding:.15cqw .7cqw; border-radius:.4cqw; border:.12cqw solid rgba(2,195,154,.5);}
+  #p9 .note{font-size:1.15cqw; color:var(--muted); margin-top:1.4cqw;}
+
+  #p10 .chips{display:flex; flex-wrap:wrap; gap:1.1cqw; margin-top:2.4cqw; align-content:flex-start; flex:1;}
+  #p10 .chip{background:var(--tint); color:var(--teal); font-size:1.4cqw; font-weight:600; padding:1cqw 1.6cqw; border-radius:3cqw; box-shadow:0 .4cqw 1.2cqw rgba(0,0,0,.07);}
+  #p10 .chip.alt{background:var(--dark); color:#CFE6E4;}
+  #p10 .foot{font-size:1.2cqw; color:var(--muted); margin-top:1.6cqw;}
+
+  #p11 .cs{display:grid; grid-template-columns:1fr 1fr; gap:1.6cqw; margin-top:2.4cqw; flex:1;}
+  #p11 .c{display:flex; gap:1.4cqw; align-items:flex-start; background:#fff; border:.16cqw solid var(--line); border-radius:1cqw; padding:1.8cqw 2cqw; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.05);}
+  #p11 .c .badge{width:4.4cqw;height:4.4cqw; background:#FCEFE8;} #p11 .c .badge svg{stroke:var(--coral);}
+  #p11 .ct{font-size:1.55cqw; font-weight:700; color:var(--text); margin-bottom:.4cqw;}
+  #p11 .cd{font-size:1.18cqw; color:var(--muted); line-height:1.45;}
+
+  #p12{background:var(--dark); align-items:center; justify-content:center; text-align:center;}
+  #p12 .blob.a{width:30cqw;height:30cqw;bottom:-10cqw;left:-10cqw;background:rgba(2,128,144,.28);}
+  #p12 .blob.b{width:26cqw;height:26cqw;top:-9cqw;right:-7cqw;background:rgba(2,195,154,.22);}
+  #p12 .badge{width:8cqw;height:8cqw;background:var(--teal); margin:0 auto;} #p12 .badge svg{stroke:#fff;}
+  #p12 h2{font-size:3.8cqw; font-weight:700; color:#fff; margin-top:2cqw;}
+  #p12 .chk{display:flex; flex-direction:column; gap:.9cqw; margin:2.2cqw auto 0; text-align:left; width:fit-content;}
+  #p12 .chk div{display:flex; align-items:center; gap:1cqw; font-size:1.5cqw; color:#EAF6F5;}
+  #p12 .chk .ic{width:2cqw;height:2cqw;flex:none;} #p12 .chk .ic svg{width:100%;height:100%;fill:none;stroke:var(--mint);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  #p12 .pill{display:inline-block; margin-top:2.6cqw; background:var(--mint); color:var(--dark); font-weight:700; font-size:1.45cqw; padding:1cqw 2.8cqw; border-radius:5cqw;}
+
+  /* ===================== 応用編 (a1–a9) ===================== */
+  #a1{background:var(--dark); justify-content:center;}
+  #a1 .blob.a{width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(2,128,144,.30);}
+  #a1 .blob.b{width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(2,195,154,.22);}
+  #a1 .eyebrow{color:var(--mint); font-size:1.3cqw; margin-bottom:2.2cqw;}
+  #a1 h1{font-size:4.8cqw; font-weight:700; color:#fff; line-height:1.16;}
+  #a1 .sub{font-size:1.7cqw; color:#CFE6E4; line-height:1.5; margin-top:2.8cqw; max-width:74cqw;}
+  #a1 .tag{font-size:1.25cqw; color:#9FC3C1; font-style:italic; margin-top:3.8cqw;}
+  #a1 .badge{position:absolute; width:8.6cqw; height:8.6cqw; right:9cqw; top:34cqw; background:var(--teal);}
+  #a1 .badge svg{stroke:#fff;}
+
+  #a2 .grid{display:grid; grid-template-columns:1fr 1fr; gap:1.7cqw; margin-top:2.8cqw; flex:1;}
+  #a2 .it{display:flex; gap:1.6cqw; align-items:center; background:var(--tint2); border-radius:1cqw; padding:1.9cqw 2.1cqw; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.08);}
+  #a2 .n{width:4.6cqw;height:4.6cqw;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:2cqw;}
+  #a2 .it:nth-child(1) .n{background:var(--teal);} #a2 .it:nth-child(2) .n{background:var(--sea);}
+  #a2 .it:nth-child(3) .n{background:var(--mint);} #a2 .it:nth-child(4) .n{background:var(--slate);}
+  #a2 .tt{font-size:1.8cqw; font-weight:700; color:var(--text);}
+  #a2 .dd{font-size:1.2cqw; color:var(--muted); margin-top:.3cqw; line-height:1.4;}
+
+  #a3 .three{display:grid; grid-template-columns:repeat(3,1fr); gap:1.8cqw; margin-top:3cqw; flex:1;}
+  #a3 .t3{background:var(--tint); border-radius:1.1cqw; padding:2.3cqw; display:flex; flex-direction:column; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.09);}
+  #a3 .t3 .badge{width:5.6cqw;height:5.6cqw;background:#fff; margin-bottom:1.3cqw;}
+  #a3 .t3:nth-child(1) .badge svg{stroke:var(--teal);} #a3 .t3:nth-child(2) .badge svg{stroke:var(--sea);} #a3 .t3:nth-child(3) .badge svg{stroke:var(--mint);}
+  #a3 .tt{font-size:1.8cqw; font-weight:700; color:var(--text); margin-bottom:.7cqw;}
+  #a3 .td{font-size:1.3cqw; color:var(--muted); line-height:1.5;}
+
+  #a4 .flow{display:flex; align-items:stretch; gap:.6cqw; margin-top:3cqw; flex:1;}
+  #a4 .node{flex:1; background:var(--tint2); border-radius:1cqw; padding:1.8cqw 1cqw; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:flex-start; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.07);}
+  #a4 .nc{width:5.6cqw;height:5.6cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:2cqw;box-shadow:0 .4cqw 1cqw rgba(0,0,0,.16);}
+  #a4 .node:nth-child(1) .nc{background:var(--teal);} #a4 .node:nth-child(3) .nc{background:var(--sea);}
+  #a4 .node:nth-child(5) .nc{background:var(--mint);} #a4 .node:nth-child(7) .nc{background:var(--slate);}
+  #a4 .nt{font-size:1.5cqw; font-weight:700; color:var(--text); margin-top:1.1cqw;}
+  #a4 .ntool{font-size:1.15cqw; color:var(--muted); margin-top:.6cqw; line-height:1.4;}
+  #a4 .sep{flex:none; display:flex; align-items:center; color:var(--sea); font-size:2.6cqw; font-weight:700;}
+  #a4 .foot{font-size:1.2cqw; color:var(--muted); margin-top:1.6cqw; text-align:center;}
+
+  #a5 .aud{display:grid; grid-template-columns:1fr 1fr; gap:1.5cqw; margin-top:2.2cqw; flex:1;}
+  #a5 .a{border-radius:1cqw; padding:1.7cqw 2cqw; display:flex; align-items:center; gap:1.4cqw; background:var(--tint2); box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.06);}
+  #a5 .a .badge{width:4.4cqw;height:4.4cqw;background:#fff;}
+  #a5 .a:nth-child(1) .badge svg{stroke:var(--teal);} #a5 .a:nth-child(2) .badge svg{stroke:var(--sea);}
+  #a5 .a:nth-child(3) .badge svg{stroke:var(--mint);} #a5 .a:nth-child(4) .badge svg{stroke:var(--slate);}
+  #a5 .at{font-size:1.6cqw; font-weight:700; color:var(--text);}
+  #a5 .ad{font-size:1.2cqw; color:var(--muted); margin-top:.3cqw; line-height:1.4;}
+  #a5 .note{font-size:1.2cqw; color:var(--teal); font-weight:600; margin-top:1.5cqw; text-align:center;}
+
+  #a6 .three{display:grid; grid-template-columns:repeat(3,1fr); gap:1.8cqw; margin-top:3cqw; flex:1;}
+  #a6 .t3{background:var(--tint2); border-radius:1.1cqw; padding:2.3cqw; display:flex; flex-direction:column; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.08);}
+  #a6 .t3 .badge{width:5.6cqw;height:5.6cqw;background:#fff; margin-bottom:1.3cqw;}
+  #a6 .t3:nth-child(1) .badge svg{stroke:var(--teal);} #a6 .t3:nth-child(2) .badge svg{stroke:var(--sea);} #a6 .t3:nth-child(3) .badge svg{stroke:var(--mint);}
+  #a6 .tt{font-size:1.8cqw; font-weight:700; color:var(--text); margin-bottom:.7cqw;}
+  #a6 .td{font-size:1.3cqw; color:var(--muted); line-height:1.5;}
+  #a6 .foot{font-size:1.2cqw; color:var(--teal); font-weight:600; margin-top:1.5cqw; text-align:center;}
+
+  #a7 .three{display:grid; grid-template-columns:repeat(3,1fr); gap:1.8cqw; margin-top:3cqw; flex:1;}
+  #a7 .st{background:var(--tint2); border-radius:1.1cqw; padding:2.3cqw; display:flex; flex-direction:column; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.08); position:relative;}
+  #a7 .num{width:5cqw;height:5cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:2.3cqw;margin-bottom:1.2cqw;}
+  #a7 .st:nth-child(1) .num{background:var(--teal);} #a7 .st:nth-child(2) .num{background:var(--sea);} #a7 .st:nth-child(3) .num{background:var(--coral);}
+  #a7 .tt{font-size:1.75cqw; font-weight:700; color:var(--text); margin-bottom:.6cqw;}
+  #a7 .td{font-size:1.28cqw; color:var(--muted); line-height:1.5;}
+
+  #a8 .cs{display:grid; grid-template-columns:1fr 1fr; gap:1.6cqw; margin-top:2.4cqw; flex:1;}
+  #a8 .c{display:flex; gap:1.4cqw; align-items:flex-start; background:#fff; border:.16cqw solid var(--line); border-radius:1cqw; padding:1.7cqw 2cqw; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.05);}
+  #a8 .c .badge{width:4.2cqw;height:4.2cqw; background:#FDF1E3;} #a8 .c .badge svg{stroke:var(--amber);}
+  #a8 .ct{font-size:1.5cqw; font-weight:700; color:var(--text); margin-bottom:.35cqw;}
+  #a8 .cd{font-size:1.16cqw; color:var(--muted); line-height:1.45;} #a8 .cd b{color:var(--teal);}
+
+  #a9{background:var(--dark); align-items:center; justify-content:center; text-align:center;}
+  #a9 .blob.a{width:30cqw;height:30cqw;bottom:-10cqw;left:-10cqw;background:rgba(2,128,144,.28);}
+  #a9 .blob.b{width:26cqw;height:26cqw;top:-9cqw;right:-7cqw;background:rgba(2,195,154,.22);}
+  #a9 .badge{width:8cqw;height:8cqw;background:var(--teal); margin:0 auto;} #a9 .badge svg{stroke:#fff;}
+  #a9 h2{font-size:3.8cqw; font-weight:700; color:#fff; margin-top:2cqw;}
+  #a9 .chk{display:flex; flex-direction:column; gap:.9cqw; margin:2.2cqw auto 0; text-align:left; width:fit-content;}
+  #a9 .chk div{display:flex; align-items:center; gap:1cqw; font-size:1.5cqw; color:#EAF6F5;}
+  #a9 .chk .ic{width:2cqw;height:2cqw;flex:none;} #a9 .chk .ic svg{width:100%;height:100%;fill:none;stroke:var(--mint);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  #a9 .pill{display:inline-block; margin-top:2.6cqw; background:var(--mint); color:var(--dark); font-weight:700; font-size:1.45cqw; padding:1cqw 2.8cqw; border-radius:5cqw;}
+
+  /* ===================== controls ===================== */
+  .controls{position:fixed; bottom:18px; right:20px; z-index:20; display:flex; align-items:center; gap:10px; font-family:sans-serif;}
+  .controls button{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.14);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s;}
+  .controls button:hover{background:rgba(255,255,255,.28);}
+  .controls button:focus-visible{outline:2px solid var(--mint); outline-offset:2px;}
+  .counter{color:#cfe6e4; font-size:13px; min-width:120px; text-align:center; letter-spacing:.04em;}
+  .dots{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:20; display:flex; gap:6px;}
+  .dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.28);cursor:pointer;transition:.2s;}
+  .dots span.on{background:var(--mint); width:18px; border-radius:3px;}
+  .dots span.sec0{background:rgba(255,255,255,.5);}
+  .hint{position:fixed; bottom:20px; left:20px; z-index:20; color:rgba(255,255,255,.45); font-size:12px; font-family:sans-serif;}
+  @media (max-width:680px){ .hint{display:none;} .counter{min-width:90px;} }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- ===== COVER / TOC ===== -->
+  <section class="slide active" id="c0" data-sec="目次">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="eyebrow">AI資料作成ガイド ・ 完全版</div>
+    <h1>AIで、資料づくりを<br>変えていく。</h1>
+    <p class="sub">レベルに合わせた3部構成。見たい編をクリックすると、その先頭から始まります。</p>
+    <div class="toc">
+      <button class="tcard" data-go="i1">
+        <div class="tnum">1</div>
+        <div class="tlabel">STEP 1</div>
+        <div class="tt">導入編</div>
+        <div class="td">まず触れてみる。テーマを伝えるだけで叩き台を作る感覚をつかむ。</div>
+        <div class="tgo">この編から始める →</div>
+      </button>
+      <button class="tcard" data-go="p1">
+        <div class="tnum">2</div>
+        <div class="tlabel">STEP 2</div>
+        <div class="tt">実践編</div>
+        <div class="td">狙って作る。AIの使い分け・プロンプトの型・場面別・注意点。</div>
+        <div class="tgo">この編から始める →</div>
+      </button>
+      <button class="tcard" data-go="a1">
+        <div class="tnum">3</div>
+        <div class="tlabel">STEP 3</div>
+        <div class="tt">応用編</div>
+        <div class="td">仕組み化する。型を資産にし、AIを連携させ、チームで再現する。</div>
+        <div class="tgo">この編から始める →</div>
+      </button>
+    </div>
+    <div class="chint">そのまま進めば、導入 → 実践 → 応用の順に通して見られます。右下の ≡ でいつでも目次に戻れます。</div>
+  </section>
+
+  <!-- ============================================================= 導入編 -->
+  <section class="slide" id="i1" data-sec="導入編">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="eyebrow">はじめてのAI活用ガイド ・ 導入編</div>
+    <h1>AIに、スライドを<br>作ってもらおう。</h1>
+    <p class="sub">テーマを伝えるだけで、スライドの初稿と構成案を自動で作成。<br>「白紙からの資料づくり」から解放されます。</p>
+    <p class="tag">まずは1枚、テーマを打ち込むだけ</p>
+    <div class="badge" data-icon="wand"></div>
+  </section>
+
+  <section class="slide" id="i2" data-sec="導入編">
+    <h2 class="h-title">これって、どんな機能？</h2>
+    <p class="lead">やりたい「テーマ」を文章で伝えるだけ。あとはAIが2つのものを用意してくれます。</p>
+    <div class="cards">
+      <div class="card"><div class="badge" data-icon="file"></div><div class="ct">① スライドの初稿</div><div class="cd">そのまま見られる「たたき台」のスライドが、最初から形になって出てきます。ゼロから作る必要はありません。</div></div>
+      <div class="card"><div class="badge" data-icon="list"></div><div class="ct">② 構成案（流れ）</div><div class="cd">「どんな順番で・何を話すか」の組み立ても提案。話の流れを考える手間が省けます。</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="i3" data-sec="導入編">
+    <h2 class="h-title">こんな「困った」を解決します</h2>
+    <div class="row">
+      <div class="col before">
+        <div class="chead"><div class="badge" data-icon="frown"></div><span class="clabel">これまで</span></div>
+        <ul>
+          <li><span class="ic" data-icon="dash"></span>白紙のスライドを前に、手が止まる</li>
+          <li><span class="ic" data-icon="dash"></span>何から書けばいいか分からない</li>
+          <li><span class="ic" data-icon="dash"></span>構成を考えるだけで時間が過ぎる</li>
+          <li><span class="ic" data-icon="dash"></span>「とりあえずの形」を作るのが一番つらい</li>
+        </ul>
+      </div>
+      <div class="arrow"><div class="badge" data-icon="wand"></div></div>
+      <div class="col after">
+        <div class="chead"><div class="badge" data-icon="smile"></div><span class="clabel">これから</span></div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>最初から「形」ができている</li>
+          <li><span class="ic" data-icon="check"></span>ゼロからではなく「直す」だけ</li>
+          <li><span class="ic" data-icon="check"></span>流れもAIが提案してくれる</li>
+          <li><span class="ic" data-icon="check"></span>中身を考える時間が増える</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="i4" data-sec="導入編">
+    <h2 class="h-title">使い方は、たったの3ステップ</h2>
+    <div class="steps">
+      <div class="card step c1"><div class="num">1</div><span class="mini" data-icon="message"></span><div class="sl">STEP 1</div><div class="st">テーマを伝える</div><div class="sd">「〇〇についてのスライドを作って」と、ふだんの言葉でお願いするだけ。</div></div>
+      <div class="card step c2"><div class="num">2</div><span class="mini" data-icon="gear"></span><div class="sl">STEP 2</div><div class="st">AIが自動で作る</div><div class="sd">スライドの初稿と構成案を、AIがまとめて生成してくれます。</div></div>
+      <div class="card step c3"><div class="num">3</div><span class="mini" data-icon="pen"></span><div class="sl">STEP 3</div><div class="st">気になる所を直す</div><div class="sd">言葉や順番を整えれば完成。「ここ変えて」と追加でお願いもOK。</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="i5" data-sec="導入編">
+    <h2 class="h-title">そのまま使える「お願いの例」</h2>
+    <p class="lead">まずはマネでOK。この文をそのまま打ち込んでみてください。</p>
+    <div class="ex">
+      <div class="item"><div class="badge" data-icon="keyboard"></div><div><div class="tag">新入社員むけ</div><div class="q">「新しく入った人向けに、社内のルールを説明するスライドを作って。5枚くらいで、やさしい言葉でお願い。」</div></div></div>
+      <div class="item"><div class="badge" data-icon="keyboard"></div><div><div class="tag">会議の準備に</div><div class="q">「来週の会議用に、今期の売上をまとめるスライドの構成案を考えて。最後に「来期の目標」を入れたい。」</div></div></div>
+      <div class="item"><div class="badge" data-icon="keyboard"></div><div><div class="tag">勉強・共有に</div><div class="q">「初心者向けに「〇〇とは何か」を説明するスライド。専門用語は少なめで、例えも入れて。」</div></div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="i6" data-sec="導入編">
+    <h2 class="h-title">うまく伝える3つのコツ</h2>
+    <p class="lead">この3つを添えると、ねらい通りのスライドに近づきます。</p>
+    <div class="tips">
+      <div class="tip t1"><div class="badge" data-icon="target"></div><div class="tt">① だれに見せる？</div><div class="td">「新入社員向け」「お客様向け」など対象を伝えると、言葉づかいが合います。</div></div>
+      <div class="tip t2"><div class="badge" data-icon="layers"></div><div class="tt">② どれくらいの量？</div><div class="td">「5枚くらい」「3分で話せる量」など、ボリュームを伝えると整えやすい。</div></div>
+      <div class="tip t3"><div class="badge" data-icon="refresh"></div><div class="tt">③ 気軽に直していい</div><div class="td">一発で完璧を狙わなくてOK。「もっと短く」など、何度でも頼めます。</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="i7" data-sec="導入編">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="badge" data-icon="rocket"></div>
+    <h2>さあ、やってみよう</h2>
+    <p class="sub">完璧じゃなくて、大丈夫。まずはテーマを1つ打ち込んでみるところから。</p>
+    <div class="pill">AIが出した叩き台を、あなたが育てる</div>
+  </section>
+
+  <!-- ============================================================= 実践編 -->
+  <section class="slide" id="p1" data-sec="実践編">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="eyebrow">AI資料作成ガイド ② 実践編</div>
+    <h1>「伝え方」で、<br>仕上がりが変わる。</h1>
+    <p class="sub">テーマを投げるだけの一歩先へ。使うAIの選び方、プロンプトの組み立て方、<br>そして外せない注意点までを押さえます。</p>
+    <p class="tag">導入編を終えた人のための、実践ステップ</p>
+    <div class="badge" data-icon="wand"></div>
+  </section>
+
+  <section class="slide" id="p2" data-sec="実践編">
+    <div class="eyebrow">どのレベルにいる？</div>
+    <h2 class="h-title">3段階で、できることが広がる</h2>
+    <div class="map">
+      <div class="lvl done"><div class="k">STEP 1 ・ 導入編</div><div class="t">まず触れてみる</div><div class="d">テーマを伝えるだけで叩き台を作る。「AIに頼む」感覚をつかむ段階。</div></div>
+      <div class="lvl now"><span class="pin">▶ いまここ</span><div class="k">STEP 2 ・ 実践編</div><div class="t">狙って作る</div><div class="d">AIを使い分け、プロンプトを設計し、相手に合わせて仕上げる段階。</div></div>
+      <div class="lvl next"><div class="k">STEP 3 ・ 応用編</div><div class="t">仕組み化する</div><div class="d">テンプレ化・複数AIの連携・チームでの型づくりで、再現性を高める段階。</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="p3" data-sec="実践編">
+    <div class="eyebrow">実践編で扱う3つの柱</div>
+    <h2 class="h-title">「なんとなく」から「狙って」へ</h2>
+    <div class="grid">
+      <div class="it"><div class="n">1</div><div class="tt">AIの使い分け</div><div class="dd">いま資料作成に向いているAIと、その選び方を知る。</div></div>
+      <div class="it"><div class="n">2</div><div class="tt">プロンプトの型</div><div class="dd">伝わる指示の組み立て方を図解で理解する。見せる相手に応じた作り分けもここで。</div></div>
+      <div class="it"><div class="n">3</div><div class="tt">注意点</div><div class="dd">事実確認・機密情報など、外せない確認事項を押さえる。</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="p4" data-sec="実践編">
+    <div class="eyebrow">① AIの使い分け（2026年6月時点）</div>
+    <h2 class="h-title">いま、資料作成に向いているAI</h2>
+    <div class="tools">
+      <a class="tool" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer"><div class="ini" style="background:#10A37F">GPT</div><div class="nm">ChatGPT<span class="ext">↗</span></div><div class="ds"><b>構成・戦略づくりが得意。</b>叩き台の文章や話者ノートを一気に作り、他ツールへ流し込む使い方が効率的。</div></a>
+      <a class="tool" href="https://claude.ai" target="_blank" rel="noopener noreferrer"><div class="ini" style="background:#D97757">Cla</div><div class="nm">Claude<span class="ext">↗</span></div><div class="ds"><b>文章の質が高く、資料そのものを生成。</b>長文も丁寧で、スライドや文書をそのまま形にしやすい。</div></a>
+      <a class="tool" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer"><div class="ini" style="background:linear-gradient(135deg,#4285F4,#9B72CB)">Gem</div><div class="nm">Gemini<span class="ext">↗</span></div><div class="ds"><b>大量の資料を読み込んで要約・抽出。</b>分厚い元データから作るときに強く、Googleスライドと連携。</div></a>
+      <a class="tool" href="https://copilot.microsoft.com" target="_blank" rel="noopener noreferrer"><div class="ini" style="background:linear-gradient(135deg,#2AA5D9,#37C5A2)">Cop</div><div class="nm">Copilot<span class="ext">↗</span></div><div class="ds"><b>Office内で完結。</b>PowerPoint・Word・Excelと深く連携。Microsoft 365を使う組織と相性が良い。</div></a>
+      <a class="tool" href="https://gamma.app" target="_blank" rel="noopener noreferrer"><div class="ini" style="background:#8B5CF6">Gam</div><div class="nm">Gamma<span class="ext">↗</span></div><div class="ds"><b>テーマから数分でデザイン済みスライド。</b>見た目重視・数字少なめの資料向き（グラフの細かな管理は苦手）。</div></a>
+    </div>
+    <div class="foot">名前をクリックすると公式サイトが開きます。<span>1つに絞らず、用途で使い分けるのが今の主流。まずは普段の環境に近いものから。</span></div>
+  </section>
+
+  <section class="slide" id="p5" data-sec="実践編">
+    <div class="eyebrow">① AIの使い分け</div>
+    <h2 class="h-title">選び方は、3つの問いで決まる</h2>
+    <div class="qs">
+      <div class="q"><div class="badge" data-icon="layout"></div><div class="qt">普段の環境は？</div><div class="qd">Office中心ならCopilot、Google中心ならGemini。今の道具に近いほど学習コストが低い。</div></div>
+      <div class="q"><div class="badge" data-icon="scale"></div><div class="qt">何を重視する？</div><div class="qd">見た目のスピードならGamma、中身の質や構成ならClaude・ChatGPT。</div></div>
+      <div class="q"><div class="badge" data-icon="shield"></div><div class="qt">機密情報を扱う？</div><div class="qd">扱うなら学習除外設定・社内ルールを必ず確認。無料版・個人版は特に注意。</div></div>
+    </div>
+    <div class="twotype"><b>2つの作り方：</b>凝ったデザインの「コード生成型」と、編集しやすく崩れにくい「直接PPT型」。あとから直す前提なら後者が安心。</div>
+  </section>
+
+  <section class="slide" id="p6" data-sec="実践編">
+    <div class="eyebrow">② プロンプトの型</div>
+    <h2 class="h-title">伝わる指示は、5つの要素でできている</h2>
+    <div class="wrap">
+      <div class="parts">
+        <div class="part"><span class="chip" style="background:var(--teal)">①役割・前提</span><span class="frag">どんな立場で考えてほしいか</span></div>
+        <div class="part"><span class="chip" style="background:var(--sea)">②相手・目的</span><span class="frag">誰に見せ、どうなってほしいか</span></div>
+        <div class="part"><span class="chip" style="background:var(--mint)">③タスク</span><span class="frag">何を作ってほしいか</span></div>
+        <div class="part"><span class="chip" style="background:var(--amber)">④条件・制約</span><span class="frag">枚数・トーン・含める / 避ける</span></div>
+        <div class="part"><span class="chip" style="background:var(--slate)">⑤出力の形</span><span class="frag">どんな形式で返してほしいか</span></div>
+      </div>
+      <div class="built">
+        <div class="bl">組み立てた指示文</div>
+        <div class="sent"><span class="e1">研修担当者として、</span><span class="e2">来月入社する新人に社内ツールの使い方を理解してもらうため、</span><span class="e3">説明スライドの構成案と本文を作って。</span><span class="e4">全8枚、専門用語は避け、1枚1メッセージで。</span><span class="e5">見出し→本文→話者ノートの順に出して。</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="p7" data-sec="実践編">
+    <div class="eyebrow">② プロンプトの型</div>
+    <h2 class="h-title">同じ依頼でも、ここまで変わる</h2>
+    <div class="cmp">
+      <div class="col bad"><div class="ch"><div class="badge" data-icon="alert"></div><span class="cl">あいまいな指示</span></div><div class="quote">「営業の資料を作って。」</div><div class="why">相手も目的も量も伝わらず、AIは一般論を返すだけ。<b>毎回そこから直す手間</b>が発生します。</div></div>
+      <div class="col good"><div class="ch"><div class="badge" data-icon="check"></div><span class="cl">狙いを定めた指示</span></div><div class="quote">「中小企業の経営者に、新サービスの導入を決めてもらうための提案スライドを10枚。結論を先に、費用対効果を数字で示して。」</div><div class="why">相手・目的・量・見せ方まで指定。<b>最初から狙いに近い叩き台</b>が返ってきます。</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="p8" data-sec="実践編">
+    <div class="eyebrow">② プロンプトの型 ・ 場面別の作り分け</div>
+    <h2 class="h-title">「誰に見せるか」で中身を変える</h2>
+    <div class="aud">
+      <div class="a a1"><div class="ah"><div class="badge" data-icon="target"></div><span class="at">経営層・決裁者</span></div><div class="ad">結論から先に。数字と効果で示し、枚数は絞る。詳細は補足や別添に回す。</div></div>
+      <div class="a a2"><div class="ah"><div class="badge" data-icon="users"></div><span class="at">現場・チーム</span></div><div class="ad">手順と具体例を厚めに。読めばすぐ動ける粒度に。背景より「やること」。</div></div>
+      <div class="a a3"><div class="ah"><div class="badge" data-icon="message"></div><span class="at">顧客・社外</span></div><div class="ad">信頼感とデザインを重視。専門用語は噛み砕き、相手の利益を主語に。</div></div>
+      <div class="a a4"><div class="ah"><div class="badge" data-icon="rocket"></div><span class="at">登壇・大人数</span></div><div class="ad">1スライド1メッセージ。文字は最小限にして、口頭で補う前提で作る。</div></div>
+    </div>
+    <div class="tieback">この「相手」をそのままプロンプトの②に書けば、AIが作り分けてくれます。</div>
+  </section>
+
+  <section class="slide" id="p9" data-sec="実践編">
+    <div class="eyebrow">② プロンプトの型</div>
+    <h2 class="h-title">コピペして埋めるだけのテンプレート</h2>
+    <div class="tpl"><p><span class="ph">［立場］</span>として、<span class="ph">［相手］</span>に <span class="ph">［してほしいこと］</span>ための <span class="ph">［作るもの］</span>を作ってください。<br>条件は <span class="ph">［枚数・トーン・入れる/避ける要素］</span>。<br><span class="ph">［見出し→本文→話者ノート など出力の形］</span>で出してください。</p></div>
+    <div class="note">［　］を自分の状況に置き換えるだけ。迷ったら「相手」と「枚数」の2つだけでも添えると精度が上がります。</div>
+  </section>
+
+  <section class="slide" id="p10" data-sec="実践編">
+    <div class="eyebrow">② プロンプトの型</div>
+    <h2 class="h-title">一発で完璧を狙わず、ひと言で育てる</h2>
+    <div class="chips">
+      <span class="chip">もっと簡潔に</span><span class="chip">この章だけ作り直して</span><span class="chip">専門用語をやさしく</span><span class="chip">数字を表にして</span><span class="chip">話し言葉のトーンに</span><span class="chip">具体例を1つ足して</span>
+      <span class="chip alt">3枚に削って</span><span class="chip alt">タイトル案を5つ</span><span class="chip alt">反対意見も入れて</span><span class="chip alt">図解にできる箇所は？</span>
+    </div>
+    <div class="foot">完成形を最初から書こうとせず、出てきた叩き台に短い修正を重ねるのが速いです。</div>
+  </section>
+
+  <section class="slide" id="p11" data-sec="実践編">
+    <div class="eyebrow">③ 注意点</div>
+    <h2 class="h-title">AIに任せても、最後は人が確認する</h2>
+    <div class="cs">
+      <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">数字・固有名詞・日付</div><div class="cd">それらしい誤りを混ぜることがある。出典に当たって必ず検証する。</div></div></div>
+      <div class="c"><div class="badge" data-icon="shield"></div><div><div class="ct">機密情報を入れない</div><div class="cd">顧客名や未公開情報は安易に貼らない。学習除外・社内ルールを確認。</div></div></div>
+      <div class="c"><div class="badge" data-icon="pen"></div><div><div class="ct">日本語とトーンの最終調整</div><div class="cd">不自然な言い回しは残りがち。読み手に合わせて人が整える。</div></div></div>
+      <div class="c"><div class="badge" data-icon="file"></div><div><div class="ct">出典・引用の扱い</div><div class="cd">他者の文章をそのまま貼らない。要点を自分の言葉で書き直す。</div></div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="p12" data-sec="実践編">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="badge" data-icon="listcheck"></div>
+    <h2>狙って作れば、速くて伝わる</h2>
+    <div class="chk">
+      <div><span class="ic" data-icon="check"></span>用途に合うAIを選んだ</div>
+      <div><span class="ic" data-icon="check"></span>相手・目的・量・形式をプロンプトに入れた</div>
+      <div><span class="ic" data-icon="check"></span>見せる相手に合わせて作り分けた</div>
+      <div><span class="ic" data-icon="check"></span>数字と機密は人が確認した</div>
+    </div>
+    <div class="pill">次は、よく使う指示を「型」として保存しよう</div>
+  </section>
+
+  <!-- ============================================================= 応用編 -->
+  <section class="slide" id="a1" data-sec="応用編">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="eyebrow">AI資料作成ガイド ③ 応用編</div>
+    <h1>仕組み化して、<br>毎回ラクにする。</h1>
+    <p class="sub">良かったやり方を「型」として残し、AIを連携させ、チームで再現する。<br>一度きりの工夫を、続く仕組みに変えていきます。</p>
+    <p class="tag">実践編の次の、再現性のステージ</p>
+    <div class="badge" data-icon="shuffle"></div>
+  </section>
+
+  <section class="slide" id="a2" data-sec="応用編">
+    <div class="eyebrow">応用編で扱う4つの柱</div>
+    <h2 class="h-title">「一回の工夫」を「続く仕組み」に</h2>
+    <div class="grid">
+      <div class="it"><div class="n">1</div><div><div class="tt">型を資産にする</div><div class="dd">良い指示を保存して使い回す</div></div></div>
+      <div class="it"><div class="n">2</div><div><div class="tt">AIを連携させる</div><div class="dd">工程ごとに得意なAIにつなぐ</div></div></div>
+      <div class="it"><div class="n">3</div><div><div class="tt">自分・チームに合わせる</div><div class="dd">前提を覚えさせ、型を共有する</div></div></div>
+      <div class="it"><div class="n">4</div><div><div class="tt">品質を担保する</div><div class="dd">数字と事実の確認を仕組みに</div></div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="a3" data-sec="応用編">
+    <div class="eyebrow">① 型を資産にする</div>
+    <h2 class="h-title">良い指示は、毎回書かずに使い回す</h2>
+    <div class="three">
+      <div class="t3"><div class="badge" data-icon="bookmark"></div><div class="tt">① 保存しておく</div><div class="td">うまくいった指示文は、メモやドキュメントに残す。次回はコピペから始められる。</div></div>
+      <div class="t3"><div class="badge" data-icon="sliders"></div><div class="tt">② 変数にして使い回す</div><div class="td">相手・枚数・トーンを［　］にしておけば、状況を入れ替えるだけで何度でも使える。</div></div>
+      <div class="t3"><div class="badge" data-icon="list"></div><div class="tt">③ 名前を付けて整理</div><div class="td">「提案資料用」「議事録要約用」など用途名で並べると、必要な型をすぐ呼び出せる。</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="a4" data-sec="応用編">
+    <div class="eyebrow">② AIを連携させる</div>
+    <h2 class="h-title">工程ごとに、得意なAIへ渡す</h2>
+    <div class="flow">
+      <div class="node"><div class="nc">1</div><div class="nt">調べる</div><div class="ntool">大量の資料を読み込む工程<br>（Gemini など）</div></div>
+      <div class="sep">›</div>
+      <div class="node"><div class="nc">2</div><div class="nt">組み立てる</div><div class="ntool">構成と本文を作る工程<br>（ChatGPT・Claude）</div></div>
+      <div class="sep">›</div>
+      <div class="node"><div class="nc">3</div><div class="nt">形にする</div><div class="ntool">見た目を整える工程<br>（Gamma など）</div></div>
+      <div class="sep">›</div>
+      <div class="node"><div class="nc">4</div><div class="nt">仕上げる</div><div class="ntool">数字と事実を確認する工程<br>（人＋Office）</div></div>
+    </div>
+    <div class="foot">1つのAIに全部やらせず、工程で分ける。前の出力をそのまま次に渡すとスムーズです。</div>
+  </section>
+
+  <section class="slide" id="a5" data-sec="応用編">
+    <div class="eyebrow">③ 自分・チームに合わせる</div>
+    <h2 class="h-title">前提を覚えさせれば、毎回伝えなくていい</h2>
+    <div class="aud">
+      <div class="a"><div class="badge" data-icon="users"></div><div><div class="at">会社・チームの前提</div><div class="ad">事業内容や読み手、社内の言い回しなど、毎回同じ説明を省ける。</div></div></div>
+      <div class="a"><div class="badge" data-icon="pen"></div><div><div class="at">よく使うトーン</div><div class="ad">「ですます・簡潔・前向き」など、文体の好みを一度伝えておく。</div></div></div>
+      <div class="a"><div class="badge" data-icon="layout"></div><div><div class="at">定番フォーマット</div><div class="ad">見出し→本文→まとめ等、いつもの構成を初期設定にしておく。</div></div></div>
+      <div class="a"><div class="badge" data-icon="target"></div><div><div class="at">対象読者</div><div class="ad">主な相手を登録しておくと、毎回ちょうどよい粒度で返ってくる。</div></div></div>
+    </div>
+    <div class="note">各サービスの「カスタム指示」「プロジェクト」「スタイル設定」に登録しておくのが近道です。</div>
+  </section>
+
+  <section class="slide" id="a6" data-sec="応用編">
+    <div class="eyebrow">③ 自分・チームに合わせる</div>
+    <h2 class="h-title">「型」をチームの共有財産にする</h2>
+    <div class="three">
+      <div class="t3"><div class="badge" data-icon="share"></div><div class="tt">① プロンプト集を共有</div><div class="td">うまくいった指示を一か所に集める。誰でも同じ品質で始められる。</div></div>
+      <div class="t3"><div class="badge" data-icon="listcheck"></div><div class="tt">② 命名・整理のルール</div><div class="td">用途名と更新日をそろえる。古い型が混ざらず、探す時間が減る。</div></div>
+      <div class="t3"><div class="badge" data-icon="check"></div><div class="tt">③ レビュー観点を統一</div><div class="td">「事実・トーン・機密」を共通チェック項目に。仕上がりがブレない。</div></div>
+    </div>
+    <div class="foot">属人化を防ぐと、誰が作っても一定の品質になり、再現性が一気に上がります。</div>
+  </section>
+
+  <section class="slide" id="a7" data-sec="応用編">
+    <div class="eyebrow">④ 品質を担保する</div>
+    <h2 class="h-title">数字・図表は「渡して・整えて・確認」</h2>
+    <div class="three">
+      <div class="st"><div class="num">1</div><div class="tt">元データを渡す</div><div class="td">CSVや表をそのまま添付し、「この数字を使って」と指定。憶測で作らせない。</div></div>
+      <div class="st"><div class="num">2</div><div class="tt">表・グラフに整える</div><div class="td">「比較表に」「推移を折れ線で」など、見せ方を指定して整形してもらう。</div></div>
+      <div class="st"><div class="num">3</div><div class="tt">数値を人が検証</div><div class="td">合計や単位、出典を必ず突き合わせる。最終的な正しさの責任は人にある。</div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="a8" data-sec="応用編">
+    <div class="eyebrow">④ 品質を担保する</div>
+    <h2 class="h-title">つまずきポイントと、その直し方</h2>
+    <div class="cs">
+      <div class="c"><div class="badge" data-icon="xcircle"></div><div><div class="ct">一度に詰め込みすぎ</div><div class="cd">要求が多いと精度が落ちる。<b>工程や章ごとに分けて頼む。</b></div></div></div>
+      <div class="c"><div class="badge" data-icon="xcircle"></div><div><div class="ct">目的を伝えず丸投げ</div><div class="cd">相手と狙いがないと一般論に。<b>プロンプトの型に戻る。</b></div></div></div>
+      <div class="c"><div class="badge" data-icon="xcircle"></div><div><div class="ct">一発生成に固執</div><div class="cd">完璧を一回で狙わない。<b>短い修正を重ねて育てる。</b></div></div></div>
+      <div class="c"><div class="badge" data-icon="xcircle"></div><div><div class="ct">確認せず提出</div><div class="cd">事実誤りが残ることがある。<b>数字と出典は必ず見直す。</b></div></div></div>
+    </div>
+  </section>
+
+  <section class="slide" id="a9" data-sec="応用編">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="badge" data-icon="listcheck"></div>
+    <h2>型にすれば、速さは積み上がる</h2>
+    <div class="chk">
+      <div><span class="ic" data-icon="check"></span>よく使う指示を保存・変数化した</div>
+      <div><span class="ic" data-icon="check"></span>工程ごとにAIを使い分けた</div>
+      <div><span class="ic" data-icon="check"></span>前提を覚えさせ、チームで共有した</div>
+      <div><span class="ic" data-icon="check"></span>数字と事実の確認を仕組みにした</div>
+    </div>
+    <div class="pill">自分とチームの「定番プロンプト集」をつくろう</div>
+  </section>
+
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="controls">
+  <button id="home" aria-label="目次へ">≡</button>
+  <button id="prev" aria-label="前のスライド">‹</button>
+  <span class="counter" id="counter">目次</span>
+  <button id="next" aria-label="次のスライド">›</button>
+  <button id="fs" aria-label="全画面">⤢</button>
+</div>
+<div class="hint">← → / スペースキーでめくる ・ クリックで次へ ・ ≡ で目次</div>
+
+<script>
+const ICONS = {
+  wand:'<path d="M12 3l1.6 4.9a1.5 1.5 0 0 0 1 1L19.5 10l-4.9 1.6a1.5 1.5 0 0 0-1 1L12 17.5l-1.6-4.9a1.5 1.5 0 0 0-1-1L4.5 10l4.9-1.6a1.5 1.5 0 0 0 1-1z"/><path d="M19 4.5v2M5 18v2M20 18v1.5M4.5 5.5V7"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>',
+  list:'<line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>',
+  frown:'<circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  smile:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  message:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  pen:'<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/>',
+  keyboard:'<rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="10"/><line x1="10" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="14" y2="10"/><line x1="18" y1="10" x2="18" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/>',
+  target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  layers:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  refresh:'<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  rocket:'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  dash:'<line x1="5" y1="12" x2="19" y2="12"/>',
+  alert:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  layout:'<rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/>',
+  scale:'<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
+  listcheck:'<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
+  shuffle:'<path d="M18 4l3 3-3 3"/><path d="M18 20l3-3-3-3"/><path d="M3 7h3a5 5 0 0 1 4 2l4 6a5 5 0 0 0 4 2h3"/><path d="M3 17h3a5 5 0 0 0 4-2l.5-.75"/><path d="M21 7h-3a5 5 0 0 0-4 2l-.5.75"/>',
+  bookmark:'<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+  sliders:'<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
+  share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
+  xcircle:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'
+};
+document.querySelectorAll('[data-icon]').forEach(el=>{
+  const n=el.getAttribute('data-icon'); if(!ICONS[n])return;
+  el.innerHTML=`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${ICONS[n]}</svg>`;
+});
+document.querySelectorAll('a.tool').forEach(a=>a.addEventListener('click',e=>e.stopPropagation()));
+
+const slides=Array.from(document.querySelectorAll('.slide'));
+const counter=document.getElementById('counter');
+const dotsWrap=document.getElementById('dots');
+
+// per-section numbering for the counter label
+const secOf=slides.map(s=>s.dataset.sec);
+const secTotal={}; secOf.forEach(n=>secTotal[n]=(secTotal[n]||0)+1);
+const within=[]; const seen={};
+secOf.forEach((n,i)=>{seen[n]=(seen[n]||0)+1; within[i]=seen[n];});
+
+let cur=0;
+slides.forEach((s,i)=>{
+  const d=document.createElement('span');
+  if(s.dataset.sec==='目次') d.classList.add('sec0');
+  d.addEventListener('click',e=>{e.stopPropagation();go(i);});
+  dotsWrap.appendChild(d);
+});
+const dots=Array.from(dotsWrap.children);
+
+function label(i){
+  const sec=secOf[i];
+  if(sec==='目次') return '目次';
+  return sec+'　'+within[i]+' / '+secTotal[sec];
+}
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,idx)=>s.classList.toggle('active',idx===cur));
+  dots.forEach((d,idx)=>d.classList.toggle('on',idx===cur));
+  counter.textContent=label(cur);
+}
+function next(){go(cur+1);} function prev(){go(cur-1);}
+function jumpToId(id){const t=document.getElementById(id); if(t) go(slides.indexOf(t));}
+
+// TOC buttons
+document.querySelectorAll('#c0 .tcard').forEach(btn=>{
+  btn.addEventListener('click',e=>{e.stopPropagation(); jumpToId(btn.dataset.go);});
+});
+
+document.getElementById('next').addEventListener('click',e=>{e.stopPropagation();next();});
+document.getElementById('prev').addEventListener('click',e=>{e.stopPropagation();prev();});
+document.getElementById('home').addEventListener('click',e=>{e.stopPropagation();go(0);});
+document.getElementById('fs').addEventListener('click',e=>{e.stopPropagation();
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();});
+document.getElementById('stage').addEventListener('click',next);
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();prev();}
+  else if(e.key==='Home')go(0); else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F')document.getElementById('fs').click();
+});
+go(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI基盤を選ぶ ─ headroom / ECC / codegraph</title>
+<style>
+  :root{
+    --dark:#0B3C40; --teal:#028090; --sea:#00A896; --mint:#02C39A;
+    --slate:#50808E; --amber:#D99100; --coral:#F2784B;
+    --tint:#EAF6F5; --tint2:#F4FAFA; --white:#FFFFFF;
+    --text:#1A2E35; --muted:#5C7079; --line:#E2EDED;
+    /* tool accent colors */
+    --c-head:#028090; --c-ecc:#00A896; --c-cg:#02C39A;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{background:#06292c;
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","YuGothic",Meiryo,"Noto Sans JP",sans-serif;
+    color:var(--text); display:flex; align-items:center; justify-content:center; min-height:100vh; overflow:hidden; -webkit-font-smoothing:antialiased;}
+  .stage{position:relative; width:min(100vw,177.78vh); aspect-ratio:16/9; box-shadow:0 24px 80px rgba(0,0,0,.45); border-radius:6px; overflow:hidden; background:var(--white);}
+  .slide{container-type:size; position:absolute; inset:0; padding:5cqw 5cqw; display:flex; flex-direction:column;
+    opacity:0; visibility:hidden; transform:translateY(1.2cqw);
+    transition:opacity .45s ease, transform .45s ease, visibility .45s; overflow:hidden;}
+  .slide.active{opacity:1; visibility:visible; transform:none;}
+  @media (prefers-reduced-motion:reduce){ .slide{transition:opacity .2s ease; transform:none;} }
+
+  .eyebrow{color:var(--teal); font-weight:700; letter-spacing:.16em; font-size:1.2cqw; margin-bottom:.6cqw;}
+  .h-title{font-size:3.2cqw; font-weight:700; color:var(--text); line-height:1.18;}
+  .lead{font-size:1.4cqw; color:var(--muted); line-height:1.5; margin-top:1cqw;}
+  .badge{border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none; box-shadow:0 .5cqw 1.2cqw rgba(0,0,0,.14);}
+  .badge svg{width:55%; height:55%; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round;}
+  .blob{position:absolute; border-radius:50%; pointer-events:none;}
+
+  /* ===== S1 title ===== */
+  #s1{background:var(--dark); justify-content:center;}
+  #s1 .blob.a{width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(2,128,144,.30);}
+  #s1 .blob.b{width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(2,195,154,.22);}
+  #s1 .eyebrow{color:var(--mint); font-size:1.3cqw; margin-bottom:2cqw;}
+  #s1 h1{font-size:4.6cqw; font-weight:700; color:#fff; line-height:1.16;}
+  #s1 .sub{font-size:1.65cqw; color:#CFE6E4; line-height:1.55; margin-top:2.4cqw; max-width:74cqw;}
+  #s1 .names{display:flex; gap:1cqw; margin-top:3cqw;}
+  #s1 .name{font-size:1.2cqw; color:#fff; padding:.7cqw 1.4cqw; border-radius:3cqw; font-weight:700; letter-spacing:.04em;}
+  #s1 .name.h{background:var(--c-head);}
+  #s1 .name.e{background:var(--c-ecc);}
+  #s1 .name.c{background:var(--c-cg);}
+  #s1 .tag{font-size:1.2cqw; color:#9FC3C1; font-style:italic; margin-top:2.4cqw;}
+
+  /* ===== S2 problem framing ===== */
+  #s2 .cmp{display:flex; gap:2cqw; margin-top:2.6cqw; flex:1;}
+  #s2 .col{flex:1; border-radius:1cqw; padding:2.2cqw; display:flex; flex-direction:column;}
+  #s2 .bad{background:var(--tint2); border:.16cqw solid #F3D9CE;}
+  #s2 .good{background:var(--tint); border:.16cqw solid #BFE4E0;}
+  #s2 .ch{display:flex; align-items:center; gap:1cqw; margin-bottom:1.4cqw;}
+  #s2 .ch .badge{width:4cqw;height:4cqw;}
+  #s2 .bad .badge{background:#FCEAE1;} #s2 .bad .badge svg{stroke:var(--coral);}
+  #s2 .good .badge{background:#fff;} #s2 .good .badge svg{stroke:var(--teal);}
+  #s2 .cl{font-size:1.7cqw; font-weight:700;}
+  #s2 .bad .cl{color:var(--coral);} #s2 .good .cl{color:var(--teal);}
+  #s2 ul{list-style:none; display:flex; flex-direction:column; gap:1.05cqw;}
+  #s2 li{font-size:1.35cqw; color:var(--text); line-height:1.45; display:flex; gap:.9cqw; align-items:flex-start;}
+  #s2 li .ic{width:1.7cqw; height:1.7cqw; flex:none; margin-top:.2cqw;}
+  #s2 li .ic svg{width:100%; height:100%; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
+  #s2 .bad li .ic svg{stroke:var(--coral);} #s2 .good li .ic svg{stroke:var(--teal);}
+
+  /* ===== S3 three pillars ===== */
+  #s3 .three{display:grid; grid-template-columns:repeat(3,1fr); gap:1.6cqw; margin-top:2.6cqw; flex:1;}
+  #s3 .t{border-radius:1.1cqw; padding:2.1cqw 1.9cqw; display:flex; flex-direction:column; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.09); position:relative; background:var(--tint2);}
+  #s3 .t .nm{display:flex; align-items:center; gap:1cqw; margin-bottom:1.1cqw;}
+  #s3 .t .chip{font-size:1cqw; font-weight:700; color:#fff; padding:.35cqw 1cqw; border-radius:.5cqw; letter-spacing:.04em;}
+  #s3 .t.h .chip{background:var(--c-head);}
+  #s3 .t.e .chip{background:var(--c-ecc);}
+  #s3 .t.c .chip{background:var(--c-cg);}
+  #s3 .t .role{font-size:1.05cqw; color:var(--muted); font-weight:600;}
+  #s3 .t .tt{font-size:1.85cqw; font-weight:700; color:var(--text); margin-bottom:.6cqw;}
+  #s3 .t .td{font-size:1.22cqw; color:var(--muted); line-height:1.5; margin-bottom:1cqw;}
+  #s3 .t .num{margin-top:auto; display:flex; align-items:baseline; gap:.5cqw;}
+  #s3 .t .num .val{font-size:2.5cqw; font-weight:800;}
+  #s3 .t .num .lbl{font-size:1cqw; color:var(--muted);}
+  #s3 .t.h .val{color:var(--c-head);}
+  #s3 .t.e .val{color:var(--c-ecc);}
+  #s3 .t.c .val{color:var(--c-cg);}
+
+  /* ===== S4 / S5 / S6 detail layout ===== */
+  .detail{display:grid; grid-template-columns:1.35fr 1fr; gap:1.8cqw; margin-top:1.8cqw; flex:1; min-height:0;}
+  .dleft{display:flex; flex-direction:column; gap:1.2cqw;}
+  .dhero{border-radius:1.1cqw; padding:2cqw; color:#fff; box-shadow:0 .8cqw 2cqw rgba(0,0,0,.18);}
+  .dhero .ehead{display:flex; align-items:center; gap:1cqw;}
+  .dhero .num{width:3.4cqw;height:3.4cqw;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.5cqw;}
+  .dhero .nm{font-size:2.2cqw; font-weight:800; letter-spacing:.02em;}
+  .dhero .role{font-size:1.1cqw; opacity:.85; margin-top:1cqw; letter-spacing:.04em; font-weight:600;}
+  .dhero .one{font-size:1.55cqw; line-height:1.55; margin-top:.6cqw;}
+  .dfeat{background:var(--tint2); border-radius:1cqw; padding:1.6cqw 1.8cqw;}
+  .dfeat .lbl{font-size:1.1cqw; font-weight:700; color:var(--teal); margin-bottom:.7cqw; letter-spacing:.08em;}
+  .dfeat ul{list-style:none; display:flex; flex-direction:column; gap:.7cqw;}
+  .dfeat li{font-size:1.28cqw; color:var(--text); line-height:1.45; display:flex; gap:.9cqw; align-items:flex-start;}
+  .dfeat li .ic{width:1.7cqw; height:1.7cqw; flex:none; margin-top:.2cqw;}
+  .dfeat li .ic svg{width:100%; height:100%; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; stroke:var(--teal);}
+
+  .dright{display:flex; flex-direction:column; gap:1.2cqw;}
+  .dcard{background:var(--white); border:.16cqw solid var(--line); border-radius:1cqw; padding:1.5cqw 1.7cqw;}
+  .dcard .clbl{font-size:1cqw; font-weight:700; color:var(--muted); letter-spacing:.1em; margin-bottom:.55cqw;}
+  .dcard .cval{font-size:1.3cqw; color:var(--text); line-height:1.5;}
+  .dcard.bigstat{background:var(--dark); border:none; color:#fff;}
+  .dcard.bigstat .clbl{color:#9FC3C1;}
+  .dcard.bigstat .cval{color:#fff;}
+  .dcard.bigstat .big{font-size:3cqw; font-weight:800; color:var(--mint); margin-top:.3cqw;}
+  .dcard.example{background:var(--tint); border-color:#BFE4E0;}
+  .dcard.example .cval{font-style:normal;}
+
+  /* color tints per tool */
+  #s4 .dhero{background:linear-gradient(135deg,#015e6a,var(--c-head));}
+  #s5 .dhero{background:linear-gradient(135deg,#017f72,var(--c-ecc));}
+  #s6 .dhero{background:linear-gradient(135deg,#019571,var(--c-cg));}
+  #s4 .dfeat li .ic svg{stroke:var(--c-head);}
+  #s5 .dfeat li .ic svg{stroke:var(--c-ecc);}
+  #s6 .dfeat li .ic svg{stroke:var(--c-cg);}
+  #s4 .dfeat .lbl{color:var(--c-head);}
+  #s5 .dfeat .lbl{color:var(--c-ecc);}
+  #s6 .dfeat .lbl{color:var(--c-cg);}
+
+  /* ===== S7 selection matrix ===== */
+  #s7 .table{margin-top:2cqw; flex:1; display:flex; flex-direction:column; gap:.8cqw;}
+  #s7 .row{display:grid; grid-template-columns:1.4fr 1fr 1.6fr; gap:1cqw; align-items:center; background:var(--tint2); border-radius:.8cqw; padding:1.3cqw 1.6cqw; box-shadow:0 .4cqw 1cqw rgba(0,0,0,.05);}
+  #s7 .row.head{background:transparent; box-shadow:none; padding:.4cqw 1.6cqw;}
+  #s7 .row.head div{font-size:1cqw; font-weight:700; color:var(--muted); letter-spacing:.1em;}
+  #s7 .case{font-size:1.42cqw; font-weight:700; color:var(--text);}
+  #s7 .pick{display:flex; align-items:center; gap:.7cqw;}
+  #s7 .pick .chip{font-size:1.1cqw; font-weight:700; color:#fff; padding:.35cqw 1cqw; border-radius:.5cqw;}
+  #s7 .pick.h .chip{background:var(--c-head);}
+  #s7 .pick.e .chip{background:var(--c-ecc);}
+  #s7 .pick.c .chip{background:var(--c-cg);}
+  #s7 .why{font-size:1.22cqw; color:var(--muted); line-height:1.4;}
+  #s7 .foot{font-size:1.15cqw; color:var(--muted); margin-top:1.2cqw;}
+
+  /* ===== S8 closing ===== */
+  #s8{background:var(--dark); align-items:center; justify-content:center; text-align:center;}
+  #s8 .blob.a{width:30cqw;height:30cqw;bottom:-10cqw;left:-10cqw;background:rgba(2,128,144,.28);}
+  #s8 .blob.b{width:26cqw;height:26cqw;top:-9cqw;right:-7cqw;background:rgba(2,195,154,.22);}
+  #s8 .badge{width:8cqw;height:8cqw;background:var(--teal); margin:0 auto;} #s8 .badge svg{stroke:#fff;}
+  #s8 h2{font-size:3.6cqw; font-weight:700; color:#fff; margin-top:2cqw;}
+  #s8 .chk{display:flex; flex-direction:column; gap:.9cqw; margin:2.2cqw auto 0; text-align:left; width:fit-content;}
+  #s8 .chk div{display:flex; align-items:center; gap:1cqw; font-size:1.4cqw; color:#EAF6F5;}
+  #s8 .chk .ic{width:2cqw;height:2cqw;flex:none;} #s8 .chk .ic svg{width:100%;height:100%;fill:none;stroke:var(--mint);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  #s8 .pill{display:inline-block; margin-top:2.4cqw; background:var(--mint); color:var(--dark); font-weight:700; font-size:1.4cqw; padding:1cqw 2.6cqw; border-radius:5cqw;}
+
+  /* controls */
+  .controls{position:fixed; bottom:18px; right:20px; z-index:20; display:flex; align-items:center; gap:10px; font-family:sans-serif;}
+  .controls button{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.14);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s;}
+  .controls button:hover{background:rgba(255,255,255,.28);}
+  .controls button:focus-visible{outline:2px solid var(--mint); outline-offset:2px;}
+  .counter{color:#cfe6e4; font-size:13px; min-width:46px; text-align:center; letter-spacing:.04em;}
+  .dots{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:20; display:flex; gap:7px;}
+  .dots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:.2s;}
+  .dots span.on{background:var(--mint); width:20px; border-radius:4px;}
+  .hint{position:fixed; bottom:20px; left:20px; z-index:20; color:rgba(255,255,255,.45); font-size:12px; font-family:sans-serif;}
+  @media (max-width:680px){ .hint{display:none;} }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- S1 title -->
+  <section class="slide active" id="s1">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="eyebrow">実践編 ・ 柱① AI基盤を選ぶ</div>
+    <h1>AIの「足腰」を、<br>3つの基盤で整える。</h1>
+    <p class="sub">エージェント時代の主役は、目立つ機能より「土台」。トークン・環境・コード理解の3つを押さえれば、上に乗るAIが一段速く・賢くなります。</p>
+    <div class="names">
+      <span class="name h">headroom</span>
+      <span class="name e">ECC</span>
+      <span class="name c">codegraph</span>
+    </div>
+    <p class="tag">この3つは競合ではなく、役割の異なる土台です</p>
+  </section>
+
+  <!-- S2 problem framing -->
+  <section class="slide" id="s2">
+    <div class="eyebrow">なぜ「基盤」なのか</div>
+    <h2 class="h-title">高機能なAIだけでは、足りない</h2>
+    <div class="cmp">
+      <div class="col bad">
+        <div class="ch"><div class="badge" data-icon="alert"></div><span class="cl">基盤がないと</span></div>
+        <ul>
+          <li><span class="ic" data-icon="dash"></span>毎回大量の文脈を投げ、トークンを浪費する</li>
+          <li><span class="ic" data-icon="dash"></span>環境設定がバラバラで、エージェントの挙動が安定しない</li>
+          <li><span class="ic" data-icon="dash"></span>コードを毎回探索させ、応答が遅くブレる</li>
+          <li><span class="ic" data-icon="dash"></span>スキル・記憶・権限が個人に閉じてしまう</li>
+        </ul>
+      </div>
+      <div class="col good">
+        <div class="ch"><div class="badge" data-icon="check"></div><span class="cl">基盤を整えると</span></div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>渡す前に圧縮して、コストと速度を両立できる</li>
+          <li><span class="ic" data-icon="check"></span>環境・スキル・記憶がパックで揃い、再現性が出る</li>
+          <li><span class="ic" data-icon="check"></span>コード構造を先に持たせ、ピンポイントで答えさせる</li>
+          <li><span class="ic" data-icon="check"></span>チームで同じ土台を共有でき、属人化が解ける</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 three pillars overview -->
+  <section class="slide" id="s3">
+    <div class="eyebrow">基盤の三役</div>
+    <h2 class="h-title">役割が違う、3つの土台</h2>
+    <div class="three">
+      <div class="t h">
+        <div class="nm"><span class="chip">headroom</span><span class="role">入力の節約</span></div>
+        <div class="tt">渡す前に圧縮</div>
+        <div class="td">ツール出力・ログ・RAGの塊をAIに渡す前に圧縮。応答を変えずにトークンだけ削る。</div>
+        <div class="num"><span class="val">60–95%</span><span class="lbl">トークン削減</span></div>
+      </div>
+      <div class="t e">
+        <div class="nm"><span class="chip">ECC</span><span class="role">環境の底上げ</span></div>
+        <div class="tt">スキルと記憶をパックで配布</div>
+        <div class="td">Claude Code・Cursor・Codex などのエージェント環境を、スキル・記憶・セキュリティ込みでまとめて強化。</div>
+        <div class="num"><span class="val">64×261</span><span class="lbl">エージェント×スキル</span></div>
+      </div>
+      <div class="t c">
+        <div class="nm"><span class="chip">codegraph</span><span class="role">コードの地図</span></div>
+        <div class="tt">先にナレッジグラフ化</div>
+        <div class="td">コードベースを事前にグラフ化。AIがファイル探索を繰り返さず、関連箇所へ最短で到達する。</div>
+        <div class="num"><span class="val">−47% / −58%</span><span class="lbl">トークン / ツール呼び出し</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 headroom detail -->
+  <section class="slide" id="s4">
+    <div class="eyebrow">基盤 ①</div>
+    <h2 class="h-title">headroom ─ 渡す前に、軽くする</h2>
+    <div class="detail">
+      <div class="dleft">
+        <div class="dhero">
+          <div class="ehead"><div class="num">1</div><div class="nm">headroom</div></div>
+          <div class="role">INPUT COMPRESSION</div>
+          <div class="one">ツール出力・ログ・ファイル・RAGの塊を、AIに渡す前に圧縮。応答品質を保ったまま、入力トークンだけを大幅に減らす。</div>
+        </div>
+        <div class="dfeat">
+          <div class="lbl">向いている使い方</div>
+          <ul>
+            <li><span class="ic" data-icon="check"></span>長いログや検索結果をエージェントに渡す前段に挟む</li>
+            <li><span class="ic" data-icon="check"></span>RAGで取り出した文書束のサイズを抑える</li>
+            <li><span class="ic" data-icon="check"></span>運用コストの上振れを止めたい本番環境</li>
+          </ul>
+        </div>
+      </div>
+      <div class="dright">
+        <div class="dcard bigstat">
+          <div class="clbl">圧縮率の目安</div>
+          <div class="big">60 〜 95%</div>
+          <div class="cval">回答は変えずに、入力だけを削れる範囲。</div>
+        </div>
+        <div class="dcard">
+          <div class="clbl">提供形態</div>
+          <div class="cval">ライブラリ／プロキシ／MCPサーバーの3形態。既存パイプに差し込みやすい。</div>
+        </div>
+        <div class="dcard example">
+          <div class="clbl">ひと言で</div>
+          <div class="cval">「AIに渡す前のフィルター」。賢くする道具ではなく、賢さを保ったまま軽くする道具。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S5 ECC detail -->
+  <section class="slide" id="s5">
+    <div class="eyebrow">基盤 ②</div>
+    <h2 class="h-title">ECC ─ エージェント環境を、まとめて底上げ</h2>
+    <div class="detail">
+      <div class="dleft">
+        <div class="dhero">
+          <div class="ehead"><div class="num">2</div><div class="nm">ECC</div></div>
+          <div class="role">AGENT ENVIRONMENT PACK</div>
+          <div class="one">Claude Code・Cursor・Codex などのエージェント環境を、スキル・記憶・セキュリティを1パックで揃えて強化するブースト集。</div>
+        </div>
+        <div class="dfeat">
+          <div class="lbl">向いている使い方</div>
+          <ul>
+            <li><span class="ic" data-icon="check"></span>チーム全員の開発エージェントを同じ土台に揃える</li>
+            <li><span class="ic" data-icon="check"></span>スキルや記憶を個人運用から組織運用へ移す</li>
+            <li><span class="ic" data-icon="check"></span>セキュリティ要件を満たした状態で配布する</li>
+          </ul>
+        </div>
+      </div>
+      <div class="dright">
+        <div class="dcard bigstat">
+          <div class="clbl">同梱されるもの</div>
+          <div class="big">64 × 261</div>
+          <div class="cval">64エージェント、261スキル。すぐ動く形でまとまっている。</div>
+        </div>
+        <div class="dcard">
+          <div class="clbl">対応する主な環境</div>
+          <div class="cval">Claude Code／Cursor／Codex などのコーディング系エージェントをまたいで適用。</div>
+        </div>
+        <div class="dcard example">
+          <div class="clbl">ひと言で</div>
+          <div class="cval">「個人技を、組織の標準装備に」。属人化していたスキルを共有資産に変える。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6 codegraph detail -->
+  <section class="slide" id="s6">
+    <div class="eyebrow">基盤 ③</div>
+    <h2 class="h-title">codegraph ─ コードに、先に地図を持たせる</h2>
+    <div class="detail">
+      <div class="dleft">
+        <div class="dhero">
+          <div class="ehead"><div class="num">3</div><div class="nm">codegraph</div></div>
+          <div class="role">CODE KNOWLEDGE GRAPH</div>
+          <div class="one">コードベースをあらかじめナレッジグラフ化。AIが毎回ファイルを探し回らず、関係する箇所へ最短で到達する。完全ローカルで動く。</div>
+        </div>
+        <div class="dfeat">
+          <div class="lbl">向いている使い方</div>
+          <ul>
+            <li><span class="ic" data-icon="check"></span>大規模リポジトリでのコード理解・改修</li>
+            <li><span class="ic" data-icon="check"></span>外部にコードを出せないクローズド環境</li>
+            <li><span class="ic" data-icon="check"></span>ツール呼び出しの暴発を抑えたいエージェント運用</li>
+          </ul>
+        </div>
+      </div>
+      <div class="dright">
+        <div class="dcard bigstat">
+          <div class="clbl">ベンチマーク平均</div>
+          <div class="big">−47% / −58%</div>
+          <div class="cval">トークン消費と、ツール呼び出し回数。どちらも大きく下がる。</div>
+        </div>
+        <div class="dcard">
+          <div class="clbl">動作環境</div>
+          <div class="cval">完全ローカル動作。コードを外に出さずに、構造理解を持たせられる。</div>
+        </div>
+        <div class="dcard example">
+          <div class="clbl">ひと言で</div>
+          <div class="cval">「探さずに、知っている状態」。AIに地図を渡すことで、毎回の探索を省く。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S7 selection matrix -->
+  <section class="slide" id="s7">
+    <div class="eyebrow">どれを選ぶか</div>
+    <h2 class="h-title">課題から、基盤を選ぶ</h2>
+    <div class="table">
+      <div class="row head"><div>こんな課題があるなら</div><div>選ぶ基盤</div><div>効く理由</div></div>
+      <div class="row"><div class="case">トークン代が膨らんでいる</div><div class="pick h"><span class="chip">headroom</span></div><div class="why">入力を渡す前に圧縮。回答は変えずに、コストと速度だけを下げる。</div></div>
+      <div class="row"><div class="case">エージェント環境がバラバラ</div><div class="pick e"><span class="chip">ECC</span></div><div class="why">スキル・記憶・セキュリティを1パックで配布。チームの土台を揃える。</div></div>
+      <div class="row"><div class="case">大きなコードベースで迷子</div><div class="pick c"><span class="chip">codegraph</span></div><div class="why">構造を先に持たせ、ファイル探索ではなく関係グラフで答えさせる。</div></div>
+      <div class="row"><div class="case">機密コードを外に出せない</div><div class="pick c"><span class="chip">codegraph</span></div><div class="why">完全ローカル動作。社外サービスにコードを渡さずに済む。</div></div>
+      <div class="row"><div class="case">スキル・記憶が個人依存</div><div class="pick e"><span class="chip">ECC</span></div><div class="why">64エージェント・261スキルを共有資産として配布できる。</div></div>
+    </div>
+    <div class="foot">3つは競合せず、組み合わせて効くタイプ。まずは一番痛い課題に当てる1つから始めるのが近道です。</div>
+  </section>
+
+  <!-- S8 closing -->
+  <section class="slide" id="s8">
+    <span class="blob a"></span><span class="blob b"></span>
+    <div class="badge" data-icon="listcheck"></div>
+    <h2>基盤を整えれば、上のAIが伸びる</h2>
+    <div class="chk">
+      <div><span class="ic" data-icon="check"></span>3つの基盤がそれぞれ何を解くかを言える</div>
+      <div><span class="ic" data-icon="check"></span>自社の課題に対し、まず使う1つを選べる</div>
+      <div><span class="ic" data-icon="check"></span>組み合わせで効くことを理解した</div>
+      <div><span class="ic" data-icon="check"></span>導入の前に、検証範囲を決めた</div>
+    </div>
+    <div class="pill">次は、柱② AIエージェントを選ぶ</div>
+  </section>
+
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="controls">
+  <button id="prev" aria-label="前のスライド">‹</button>
+  <span class="counter" id="counter">1 / 8</span>
+  <button id="next" aria-label="次のスライド">›</button>
+  <button id="fs" aria-label="全画面">⤢</button>
+</div>
+<div class="hint">← → / スペースキーでめくる ・ クリックで次へ</div>
+
+<script>
+const ICONS = {
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  dash:'<line x1="5" y1="12" x2="19" y2="12"/>',
+  alert:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  listcheck:'<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>'
+};
+document.querySelectorAll('[data-icon]').forEach(el=>{
+  const n=el.getAttribute('data-icon'); if(!ICONS[n])return;
+  el.innerHTML=`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${ICONS[n]}</svg>`;
+});
+
+const slides=Array.from(document.querySelectorAll('.slide'));
+const counter=document.getElementById('counter');
+const dotsWrap=document.getElementById('dots');
+let cur=0;
+slides.forEach((_,i)=>{const d=document.createElement('span');d.addEventListener('click',e=>{e.stopPropagation();go(i);});dotsWrap.appendChild(d);});
+const dots=Array.from(dotsWrap.children);
+function go(i){cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,idx)=>s.classList.toggle('active',idx===cur));
+  dots.forEach((d,idx)=>d.classList.toggle('on',idx===cur));
+  counter.textContent=(cur+1)+' / '+slides.length;}
+function next(){go(cur+1);} function prev(){go(cur-1);}
+document.getElementById('next').addEventListener('click',e=>{e.stopPropagation();next();});
+document.getElementById('prev').addEventListener('click',e=>{e.stopPropagation();prev();});
+document.getElementById('fs').addEventListener('click',e=>{e.stopPropagation();
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();});
+document.getElementById('stage').addEventListener('click',next);
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();prev();}
+  else if(e.key==='Home')go(0); else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F')document.getElementById('fs').click();
+});
+go(0);
+</script>
+</body>
+</html>
