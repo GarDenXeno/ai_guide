@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AI資料作成ガイド（導入・実践・応用）</title>
 <style>
   :root{
@@ -317,6 +317,246 @@
   .dots span.on{background:var(--mint); width:18px; border-radius:3px;}
   .dots span.sec0{background:rgba(255,255,255,.5);}
   .hint{position:fixed; bottom:20px; left:20px; z-index:20; color:rgba(255,255,255,.45); font-size:12px; font-family:sans-serif;}
+
+  /* ====== スマホ縦画面対応：16:9固定を解除し画面いっぱいに ====== */
+  @media (max-width:680px) and (orientation:portrait){
+    body{align-items:stretch;}
+    .stage{
+      width:100vw;
+      height:100dvh;
+      aspect-ratio:auto;
+      border-radius:0;
+      box-shadow:none;
+    }
+    /* Safariの下部UI（タブバー）に被られないよう下余白を大きく取る */
+    .slide{padding:20px 18px calc(env(safe-area-inset-bottom, 0px) + 92px); justify-content:flex-start; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+    /* スマホ操作バーは不透明背景で中央配置 */
+    .controls{
+      bottom:calc(env(safe-area-inset-bottom, 0px) + 12px);
+      right:auto; left:50%; transform:translateX(-50%);
+      background:rgba(11,60,64,.92); padding:6px 8px; border-radius:30px;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      box-shadow:0 -4px 20px rgba(0,0,0,.35);
+    }
+    .controls button{width:38px;height:38px;background:rgba(255,255,255,.12);}
+    .counter{color:#fff; min-width:80px;}
+    .dots{display:none;}
+
+    /* ===== 文字サイズは絶対サイズで確保 ===== */
+    .h-title{font-size:26px !important; line-height:1.3;}
+    .eyebrow{font-size:12px !important; margin-bottom:6px;}
+    .lead{font-size:15px !important; margin-top:8px; line-height:1.55;}
+
+    /* ===== 導入編：i2 cards 2列 → 1列 ===== */
+    #i2 .cards{grid-template-columns:1fr; gap:10px;}
+    #i2 .card{padding:14px 16px;}
+    #i2 .card .badge{width:40px;height:40px;margin-bottom:8px;}
+    #i2 .card .ct{font-size:17px;margin-bottom:4px;}
+    #i2 .card .cd{font-size:14px; line-height:1.55;}
+
+    /* ===== 導入編：i3 Before/After → 縦並び ===== */
+    #i3 .row{flex-direction:column; gap:10px;}
+    #i3 .col{padding:14px 16px;}
+    #i3 .badge{width:30px;height:30px;}
+    #i3 .clabel{font-size:15px;}
+    #i3 li{font-size:13.5px; line-height:1.5; gap:8px;}
+    #i3 li .ic{width:14px;height:14px;}
+    #i3 ul{gap:8px;}
+    #i3 .arrow{display:none;}
+
+    /* ===== 導入編：i4 3ステップ → 1列 ===== */
+    #i4 .steps{grid-template-columns:1fr; gap:10px;}
+    #i4 .step{padding:14px 16px;}
+    #i4 .num{width:36px;height:36px;font-size:16px;}
+    #i4 .step .mini{width:24px;height:24px;top:14px;right:14px;}
+    #i4 .step .sl{font-size:10px; margin-top:8px;}
+    #i4 .step .st{font-size:17px; margin-top:4px;}
+    #i4 .step .sd{font-size:14px; margin-top:4px; line-height:1.55;}
+
+    /* ===== 導入編：i5 例 ===== */
+    #i5 .ex{gap:8px;}
+    #i5 .item{padding:12px 14px; gap:12px;}
+    #i5 .badge{width:36px;height:36px;}
+    #i5 .tag{font-size:11px; margin-bottom:2px;}
+    #i5 .q{font-size:14px; line-height:1.5;}
+
+    /* ===== 導入編：i6 3コツ → 1列 ===== */
+    #i6 .tips{grid-template-columns:1fr; gap:10px;}
+    #i6 .tip{padding:14px 16px;}
+    #i6 .tip .badge{width:36px;height:36px;margin-bottom:8px;}
+    #i6 .tt{font-size:17px; margin-bottom:4px;}
+    #i6 .td{font-size:14px; line-height:1.55;}
+
+    /* ===== 導入編：i7 まとめ ===== */
+    #i7 .badge{width:54px;height:54px;}
+    #i7 h2{font-size:24px;}
+    #i7 .sub{font-size:14px; margin-top:10px;}
+    #i7 .pill{font-size:13px; padding:9px 22px; margin-top:16px;}
+
+    /* ===== 実践編：p2 レベルマップ → 1列 ===== */
+    #p2 .map{flex-direction:column; gap:10px;}
+    #p2 .lvl{padding:14px 16px;}
+    #p2 .lvl .k{font-size:10px;}
+    #p2 .lvl .t{font-size:17px; margin-top:4px;}
+    #p2 .lvl .d{font-size:13.5px; margin-top:6px; line-height:1.5;}
+    #p2 .pin{top:-8px; font-size:9.5px; padding:3px 8px;}
+
+    /* ===== 実践編：p3 アジェンダ3柱 → 1列 ===== */
+    #p3 .grid{grid-template-columns:1fr; gap:10px;}
+    #p3 .it{padding:14px 16px;}
+    #p3 .n{width:36px;height:36px;font-size:16px;margin-bottom:8px;}
+    #p3 .tt{font-size:17px;}
+    #p3 .dd{font-size:14px; line-height:1.55;}
+
+    /* ===== 実践編：p4 ツールリスト ===== */
+    #p4 .tools{gap:6px;}
+    #p4 a.tool{padding:10px 12px; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+    #p4 .ini{width:32px;height:32px;font-size:10px;}
+    #p4 .nm{font-size:14px; width:auto; min-width:0;}
+    #p4 .ext{font-size:10px;}
+    #p4 .ds{font-size:12.5px; line-height:1.5; flex-basis:100%;}
+    #p4 .foot{font-size:11.5px; margin-top:10px; line-height:1.5;}
+
+    /* ===== 実践編：p5 選び方3問 → 1列 ===== */
+    #p5 .qs{grid-template-columns:1fr; gap:10px;}
+    #p5 .q{padding:14px 16px;}
+    #p5 .q .badge{width:36px;height:36px;margin-bottom:8px;}
+    #p5 .q .qt{font-size:16px; margin-bottom:4px;}
+    #p5 .q .qd{font-size:13.5px; line-height:1.5;}
+    #p5 .twotype{font-size:12.5px; padding:10px 14px; margin-top:12px; line-height:1.5;}
+
+    /* ===== 実践編：p6 プロンプト分解 → 縦並び ===== */
+    #p6 .wrap{flex-direction:column; gap:12px;}
+    #p6 .parts{gap:6px;}
+    #p6 .part{padding:6px 10px; gap:8px;}
+    #p6 .chip{font-size:10px; padding:3px 8px; min-width:75px;}
+    #p6 .frag{font-size:13px; line-height:1.4;}
+    #p6 .built{padding:14px 16px;}
+    #p6 .built .bl{font-size:10px; margin-bottom:8px;}
+    #p6 .built .sent{font-size:13.5px; line-height:1.7;}
+
+    /* ===== 実践編：p7 Before/After → 縦並び ===== */
+    #p7 .cmp{flex-direction:column; gap:10px;}
+    #p7 .col{padding:14px 16px;}
+    #p7 .ch .badge{width:28px;height:28px;}
+    #p7 .cl{font-size:15px;}
+    #p7 .quote{font-size:13.5px; padding:10px 12px; line-height:1.5;}
+    #p7 .why{font-size:12.5px; margin-top:8px; line-height:1.5;}
+
+    /* ===== 実践編：p8 場面別 2x2 → そのまま2x2、詰める ===== */
+    #p8 .aud{grid-template-columns:1fr 1fr; gap:8px;}
+    #p8 .a{padding:12px 12px;}
+    #p8 .a .badge{width:28px;height:28px;}
+    #p8 .a .at{font-size:13px;}
+    #p8 .a .ad{font-size:12px; line-height:1.45;}
+    #p8 .tieback{font-size:12px; margin-top:10px;}
+
+    /* ===== 実践編：p9 テンプレ ===== */
+    #p9 .tpl{padding:16px 18px;}
+    #p9 .tpl p{font-size:13.5px; line-height:1.8;}
+    #p9 .ph{font-size:13.5px;}
+    #p9 .note{font-size:12px; margin-top:10px; line-height:1.5;}
+
+    /* ===== 実践編：p10 チップ ===== */
+    #p10 .chips{gap:6px;}
+    #p10 .chip{font-size:12px; padding:6px 12px;}
+    #p10 .foot{font-size:12px; margin-top:10px; line-height:1.5;}
+
+    /* ===== 実践編：p11 注意点 2x2 → 1列 ===== */
+    #p11 .cs{grid-template-columns:1fr; gap:10px;}
+    #p11 .c{padding:12px 14px; gap:12px;}
+    #p11 .c .badge{width:32px;height:32px;}
+    #p11 .ct{font-size:15px;}
+    #p11 .cd{font-size:13px; line-height:1.5;}
+
+    /* ===== 実践編：p12 まとめ ===== */
+    #p12 .badge{width:54px;height:54px;}
+    #p12 h2{font-size:24px;}
+    #p12 .chk div{font-size:13.5px;}
+    #p12 .chk .ic{width:14px;height:14px;}
+    #p12 .pill{font-size:13px; padding:9px 22px; margin-top:16px;}
+
+    /* ===== 応用編：a1 タイトル ===== */
+    #a1 .badge{position:static; width:54px;height:54px;margin-top:18px;}
+
+    /* ===== 応用編：a2 4柱 2x2 → 1列 ===== */
+    #a2 .grid{grid-template-columns:1fr; gap:10px;}
+    #a2 .it{padding:12px 14px; gap:12px;}
+    #a2 .n{width:36px;height:36px;font-size:16px;}
+    #a2 .tt{font-size:16px;}
+    #a2 .dd{font-size:13px; line-height:1.5;}
+
+    /* ===== 応用編：a3 3観点 → 1列 ===== */
+    #a3 .three{grid-template-columns:1fr; gap:10px;}
+    #a3 .t3{padding:14px 16px;}
+    #a3 .t3 .badge{width:36px;height:36px;margin-bottom:8px;}
+    #a3 .tt{font-size:16px; margin-bottom:4px;}
+    #a3 .td{font-size:13.5px; line-height:1.55;}
+
+    /* ===== 応用編：a4 フロー → 縦並び ===== */
+    #a4 .flow{flex-direction:column; gap:8px;}
+    #a4 .node{padding:12px 14px; flex-direction:row; gap:12px; text-align:left;}
+    #a4 .nc{width:36px;height:36px;font-size:16px;}
+    #a4 .nt{font-size:15px; margin-top:0;}
+    #a4 .ntool{font-size:12px; margin-top:2px; line-height:1.45;}
+    #a4 .sep{transform:rotate(90deg); align-self:center; font-size:18px;}
+    #a4 .foot{font-size:12px; margin-top:10px;}
+
+    /* ===== 応用編：a5 前提 2x2 → 1列 ===== */
+    #a5 .aud{grid-template-columns:1fr; gap:10px;}
+    #a5 .a{padding:12px 14px; gap:12px;}
+    #a5 .a .badge{width:32px;height:32px;}
+    #a5 .at{font-size:15px;}
+    #a5 .ad{font-size:13px; line-height:1.5;}
+    #a5 .note{font-size:12px; margin-top:10px; line-height:1.5;}
+
+    /* ===== 応用編：a6 3観点 → 1列 ===== */
+    #a6 .three{grid-template-columns:1fr; gap:10px;}
+    #a6 .t3{padding:14px 16px;}
+    #a6 .t3 .badge{width:36px;height:36px;margin-bottom:8px;}
+    #a6 .tt{font-size:16px; margin-bottom:4px;}
+    #a6 .td{font-size:13.5px; line-height:1.55;}
+    #a6 .foot{font-size:12px; margin-top:10px;}
+
+    /* ===== 応用編：a7 3ステップ → 1列 ===== */
+    #a7 .three{grid-template-columns:1fr; gap:10px;}
+    #a7 .st{padding:14px 16px;}
+    #a7 .num{width:36px;height:36px;font-size:18px;margin-bottom:8px;}
+    #a7 .tt{font-size:16px;}
+    #a7 .td{font-size:13.5px; line-height:1.55;}
+
+    /* ===== 応用編：a8 アンチパターン 2x2 → 1列 ===== */
+    #a8 .cs{grid-template-columns:1fr; gap:10px;}
+    #a8 .c{padding:12px 14px; gap:12px;}
+    #a8 .c .badge{width:32px;height:32px;}
+    #a8 .ct{font-size:15px;}
+    #a8 .cd{font-size:13px; line-height:1.5;}
+
+    /* ===== 応用編：a9 まとめ ===== */
+    #a9 .badge{width:54px;height:54px;}
+    #a9 h2{font-size:24px;}
+    #a9 .chk div{font-size:13.5px;}
+    #a9 .chk .ic{width:14px;height:14px;}
+    #a9 .pill{font-size:13px; padding:9px 22px; margin-top:16px;}
+
+    /* ===== 目次：5枚を縦並びでコンパクトに（数字＋編名のみ） ===== */
+    #c0 .toc{grid-template-columns:1fr; gap:8px; margin-top:14px;}
+    #c0 .tcard{padding:11px 14px; flex-direction:row; align-items:center; gap:12px;}
+    #c0 .tnum{width:32px;height:32px;font-size:14px;margin-bottom:0;flex:none;}
+    #c0 .tlabel{font-size:10px; flex:none;}
+    #c0 .tt{font-size:16px; margin-top:0; line-height:1.3;}
+    #c0 .td, #c0 .tgo{display:none;}
+    #c0 .chint{font-size:11px; margin-top:12px;}
+    #c0 h1{font-size:24px !important; line-height:1.25;}
+    #c0 .sub{font-size:13px !important; margin-top:8px; line-height:1.55;}
+
+    /* タイトルスライド共通 */
+    #i1 h1, #p1 h1, #a1 h1{font-size:28px; line-height:1.22;}
+    #i1 .sub, #p1 .sub, #a1 .sub{font-size:14px; line-height:1.6; margin-top:12px;}
+    #i1 .tag, #p1 .tag, #a1 .tag{font-size:12px; margin-top:16px;}
+    #i1 .eyebrow, #p1 .eyebrow, #a1 .eyebrow{font-size:11px; margin-bottom:10px;}
+    #i1 .badge, #p1 .badge{position:static; width:54px;height:54px;margin-top:18px;}
+  }
   @media (max-width:680px){ .hint{display:none;} .counter{min-width:90px;} }
 </style>
 </head>
