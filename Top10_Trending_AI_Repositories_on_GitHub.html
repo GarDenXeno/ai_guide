@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>GitHub急上昇AIリポジトリ10選 ─ 完全版ガイド</title>
 <style>
   :root{
@@ -372,6 +372,206 @@
   .dots span.on{background:var(--mint); width:16px; border-radius:3px;}
   .dots span.sec0{background:rgba(255,255,255,.5);}
   .hint{position:fixed; bottom:20px; left:20px; z-index:20; color:rgba(255,255,255,.45); font-size:12px; font-family:sans-serif;}
+
+  /* ====== 専門用語ツールチップ ====== */
+  .term{position:relative; color:inherit; border-bottom:.12cqw dotted currentColor; cursor:help; padding-bottom:.05cqw;}
+  .term::after{
+    content:attr(data-tip);
+    position:absolute; left:50%; bottom:calc(100% + .6cqw); transform:translateX(-50%) translateY(.4cqw);
+    background:var(--dark); color:#fff; font-size:1.05cqw; font-weight:400; line-height:1.5;
+    padding:.9cqw 1.2cqw; border-radius:.6cqw; width:max-content; max-width:26cqw;
+    white-space:normal; text-align:left; letter-spacing:0;
+    box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.3);
+    opacity:0; visibility:hidden; transition:opacity .18s, transform .18s, visibility .18s;
+    pointer-events:none; z-index:50;
+  }
+  .term::before{
+    content:''; position:absolute; left:50%; bottom:calc(100% + .15cqw); transform:translateX(-50%) translateY(.4cqw);
+    border:.55cqw solid transparent; border-top-color:var(--dark);
+    opacity:0; visibility:hidden; transition:opacity .18s, transform .18s, visibility .18s;
+    pointer-events:none; z-index:50;
+  }
+  .term:hover::after, .term:hover::before, .term.tip-open::after, .term.tip-open::before{
+    opacity:1; visibility:visible; transform:translateX(-50%) translateY(0);
+  }
+  /* hero（濃色背景）内では下線色を白系に */
+  .dhero .term, .pTitle .term, #c0 .term, #in1 .term, #in7 .term, #ap1 .term, #ap8 .term, .pClose .term{
+    border-bottom-color:rgba(255,255,255,.55);
+  }
+
+  /* ====== マトリクスの行密度を少し詰める ====== */
+  .pMatrix .row{padding:1cqw 1.4cqw;}
+  .pMatrix .table{gap:.6cqw;}
+  .pMatrix .case{font-size:1.25cqw;}
+  .pMatrix .why{font-size:1.12cqw;}
+  .pMatrix .foot{margin-top:.8cqw;}
+
+  /* ====== スマホ縦画面対応：16:9固定を解除し画面いっぱいに ====== */
+  @media (max-width:680px) and (orientation:portrait){
+    body{align-items:stretch;}
+    .stage{
+      width:100vw;
+      height:100dvh;
+      aspect-ratio:auto;
+      border-radius:0;
+      box-shadow:none;
+    }
+    .slide{padding:20px 18px 70px; justify-content:flex-start;}
+    /* ===== 文字サイズはvwベースで絶対サイズを確保 ===== */
+    .h-title{font-size:26px; line-height:1.3;}
+    .eyebrow{font-size:12px; margin-bottom:6px;}
+    .lead{font-size:15px; margin-top:8px; line-height:1.55;}
+    /* 共通カード内の本文・タイトル */
+    .card .ct, .pThree .t .tt, #ap2 .tt, #in4 .step .st, #in6 .tt, #ap4 .rh, #ap5 .stt{font-size:17px !important;}
+    .card .cd, .pThree .t .td, #ap2 .dd, #in4 .step .sd, #in6 .td, #ap5 .std{font-size:14px !important; line-height:1.55;}
+    /* バッジ・装飾のサイズ */
+    .badge{box-shadow:0 2px 6px rgba(0,0,0,.14);}
+    .badge svg{stroke-width:2;}
+
+    /* ===== マトリクスは縦並び、行のサイズ感を本気で読みやすく ===== */
+    .pMatrix .table{gap:10px;}
+    .pMatrix .row{grid-template-columns:1fr; gap:6px; padding:14px 16px;}
+    .pMatrix .row.head{display:none;}
+    .pMatrix .case{font-size:16px;}
+    .pMatrix .pick .chip{font-size:13px; padding:4px 10px;}
+    .pMatrix .why{font-size:13.5px; line-height:1.5;}
+    .pMatrix .foot{font-size:12px; margin-top:12px; line-height:1.5;}
+
+    /* ===== 3列カードは1列スタックに（縦に間延びさせない） ===== */
+    .pThree .three{grid-template-columns:1fr; gap:10px;}
+    .pThree .t{padding:14px 16px;}
+    .pThree .t .nm{margin-bottom:6px; gap:8px;}
+    .pThree .t .chip{font-size:11px; padding:3px 8px;}
+    .pThree .t .role{font-size:11px;}
+    .pThree .t .tt{margin-bottom:4px;}
+    .pThree .t .td{margin-bottom:8px;}
+    .pThree .t .num{margin-top:6px;}
+    .pThree .t .num .val{font-size:20px;}
+    .pThree .t .num .lbl{font-size:11px;}
+
+    /* 導入編の3ステップ・3コツも1列 */
+    #in4 .steps, #in6 .tips{grid-template-columns:1fr; gap:10px;}
+    #in4 .step, #in6 .tip{padding:14px 16px;}
+    #in4 .num{width:36px;height:36px;font-size:16px;}
+    #in4 .step .sl{font-size:10px; margin-top:8px;}
+    #in4 .step .st{margin-top:4px;}
+    #in4 .step .sd{margin-top:4px;}
+    #in6 .tip .badge{width:36px;height:36px;margin-bottom:10px;}
+
+    /* 応用編 4柱グリッド・3ステップ・3層スタックも1列 */
+    #ap2 .grid, #ap5 .three, #ap7 .stack, #ap6 .cs{grid-template-columns:1fr; gap:10px;}
+    #ap2 .it{padding:12px 14px; gap:12px;}
+    #ap2 .n{width:36px;height:36px;font-size:16px;}
+    #ap5 .st{padding:14px 16px;}
+    #ap5 .num{width:36px;height:36px;font-size:18px;margin-bottom:8px;}
+    #ap6 .c{padding:12px 14px;}
+    #ap6 .c .badge{width:32px;height:32px;}
+    #ap6 .ct{font-size:15px;}
+    #ap6 .cd{font-size:13px;}
+    #ap7 .layer{padding:14px 16px;}
+    #ap7 .lh{font-size:10px;}
+    #ap7 .ln{font-size:18px;}
+    #ap7 .ld{font-size:13px; line-height:1.5;}
+
+    /* 4ツール俯瞰は2x2のままだが詰める */
+    .pQuad .quad{grid-template-columns:1fr 1fr; gap:8px;}
+    .pQuad .q{padding:12px 12px;}
+    .pQuad .q .iconwrap{width:32px;height:32px;margin-bottom:8px;}
+    .pQuad .q .qt{font-size:15px; margin-bottom:2px;}
+    .pQuad .q .qd{font-size:11.5px; line-height:1.5;}
+    .pQuad .q .qn{font-size:10px; padding-top:6px;}
+
+    /* 4担当は2x2 */
+    #ap4 .team{grid-template-columns:1fr 1fr; gap:10px;}
+    #ap4 .role{padding:12px 14px;}
+    #ap4 .role .badge{width:34px;height:34px;margin-bottom:8px;}
+    #ap4 .rtools span{font-size:11px; padding:2px 6px;}
+
+    /* Before/Afterは縦並び＋詰め */
+    .pBA .cmp, #in3 .row, #in2 .cards{flex-direction:column; gap:10px;}
+    #in2 .cards{display:flex;}
+    #in2 .card{padding:14px 16px;}
+    #in2 .card .badge{width:40px;height:40px;margin-bottom:8px;}
+    .pBA .col, #in3 .col{padding:14px 16px;}
+    .pBA .ch .badge, #in3 .badge{width:30px;height:30px;}
+    .pBA .cl, #in3 .clabel{font-size:15px;}
+    .pBA li, #in3 li{font-size:13.5px; line-height:1.5;}
+    .pBA li .ic, #in3 li .ic{width:14px;height:14px;}
+    .pBA ul, #in3 ul{gap:8px;}
+
+    /* detail（1ツール詳細）も縦並び＋詰め */
+    .pDetail .detail{grid-template-columns:1fr; gap:10px; margin-top:12px;}
+    .pDetail .dleft, .pDetail .dright{gap:10px;}
+    .pDetail .dhero{padding:14px 16px;}
+    .pDetail .dhero .num{width:28px;height:28px;font-size:13px;}
+    .pDetail .dhero .nm{font-size:18px;}
+    .pDetail .dhero .role{font-size:10.5px; margin-top:8px;}
+    .pDetail .dhero .one{font-size:13.5px; line-height:1.5; margin-top:6px;}
+    .pDetail .dfeat{padding:12px 14px;}
+    .pDetail .dfeat .lbl{font-size:11px; margin-bottom:6px;}
+    .pDetail .dfeat ul{gap:5px;}
+    .pDetail .dfeat li{font-size:13px; line-height:1.45;}
+    .pDetail .dfeat li .ic{width:14px;height:14px;}
+    .pDetail .dcard{padding:12px 14px;}
+    .pDetail .dcard .clbl{font-size:10.5px;}
+    .pDetail .dcard .cval{font-size:13px;}
+    .pDetail .dcard.bigstat .big{font-size:20px;}
+
+    /* flow は縦並びの↓矢印に */
+    #ap3 .flow{flex-direction:column; gap:6px;}
+    #ap3 .node{padding:14px 16px; flex-direction:row; gap:14px; text-align:left;}
+    #ap3 .nc{width:40px;height:40px;font-size:18px;}
+    #ap3 .nt{font-size:15px; margin-top:0;}
+    #ap3 .ntool{font-size:12px; margin-top:2px;}
+    #ap3 .sep{transform:rotate(90deg); align-self:center; font-size:18px;}
+    #ap3 .foot{font-size:12px;}
+
+    /* TOCは1列に・コンパクトな横並び（数字＋編名のみ） */
+    #c0 .toc{grid-template-columns:1fr; gap:8px; margin-top:14px;}
+    #c0 .tcard{padding:11px 14px; flex-direction:row; align-items:center; gap:12px;}
+    #c0 .tnum{width:32px;height:32px;font-size:14px;margin-bottom:0;flex:none;}
+    #c0 .tlabel{font-size:10px; flex:none;}
+    #c0 .tt{font-size:16px; margin-top:0; line-height:1.3;}
+    #c0 .td, #c0 .tgo{display:none;}
+    #c0 .chint{font-size:11px; margin-top:12px;}
+    #c0 h1{font-size:24px !important; line-height:1.25;}
+    #c0 .sub{font-size:13px !important; margin-top:8px; line-height:1.55;}
+
+    /* タイトルスライドの巨大見出しを抑える */
+    #c0 .eyebrow, #in1 .eyebrow, #ap1 .eyebrow, .pTitle .eyebrow{font-size:11px; margin-bottom:10px;}
+    #c0 h1, #in1 h1, #ap1 h1, .pTitle h1{font-size:30px; line-height:1.22;}
+    #c0 .sub, #in1 .sub, #ap1 .sub, .pTitle .sub{font-size:14px; line-height:1.6; margin-top:12px;}
+    #c0 .toc{margin-top:14px;}
+    #in1 .tag, #ap1 .tag, .pTitle .tag{font-size:12px; margin-top:16px;}
+    #in1 .badge, #ap1 .badge{position:static; width:54px;height:54px;margin-top:18px;}
+    .pTitle .names{margin-top:14px; gap:6px;}
+    .pTitle .name{font-size:11px; padding:4px 10px;}
+
+    /* 例（ex）系も詰める */
+    #in5 .ex{gap:8px;}
+    #in5 .item{padding:12px 14px; gap:12px;}
+    #in5 .badge{width:36px;height:36px;}
+    #in5 .tag{font-size:11px; margin-bottom:2px;}
+    #in5 .q{font-size:14px; line-height:1.5;}
+
+    /* close系 */
+    .pClose h2, #in7 h2, #ap8 h2{font-size:24px;}
+    .pClose .badge, #in7 .badge, #ap8 .badge{width:54px;height:54px;}
+    .pClose .chk div, #in7 .chk div, #ap8 .chk div{font-size:13.5px;}
+    .pClose .chk .ic, #in7 .chk .ic, #ap8 .chk .ic{width:14px;height:14px;}
+    .pClose .pill, #in7 .pill, #ap8 .pill{font-size:13px; padding:9px 22px; margin-top:18px;}
+
+    /* tooltipはスマホでは下部に固定表示 */
+    .term::after{
+      position:fixed; left:4vw; right:4vw; bottom:78px; top:auto; transform:none;
+      max-width:none; width:auto; font-size:13px; padding:12px 14px; line-height:1.55;
+      box-shadow:0 -4px 18px rgba(0,0,0,.4);
+    }
+    .term:hover::after, .term.tip-open::after{transform:none;}
+    .term::before{display:none;}
+    /* hintは非表示・counter短縮 */
+    .hint{display:none;} .counter{min-width:90px;}
+  }
   @media (max-width:680px){ .hint{display:none;} .counter{min-width:90px;} }
 </style>
 </head>
@@ -438,7 +638,7 @@
   <p class="lead">AIそのものより、AIを支える"仕組み"が急速に進化しています。</p>
   <div class="cards">
     <div class="card"><div class="badge" data-icon="message"></div><div class="lbl">これまで</div><div class="ct">AIチャット中心</div><div class="cd">人が質問して、AIが答える。やりとりは単発で完結し、毎回最初から説明していました。</div></div>
-    <div class="card"><div class="badge" data-icon="cpu"></div><div class="lbl">これから</div><div class="ct">AIエージェント中心</div><div class="cd">調査・記憶・実行までAIが連続で担う。「相棒」のように継続して働く時代へ。</div></div>
+    <div class="card"><div class="badge" data-icon="cpu"></div><div class="lbl">これから</div><div class="ct">AI<span class="term" data-tip="人の指示を受けて、調査・判断・実行までを連続でこなすAI。単発の質問応答ではなく、目的に向かって自律的に動く点が特徴。">エージェント</span>中心</div><div class="cd">調査・記憶・実行までAIが連続で担う。「相棒」のように継続して働く時代へ。</div></div>
   </div>
 </section>
 
@@ -555,18 +755,18 @@
     <div class="t h">
       <div class="nm"><span class="chip">headroom</span><span class="role">入力の節約</span></div>
       <div class="tt">渡す前に圧縮</div>
-      <div class="td">ツール出力・ログ・RAGの塊をAIに渡す前に圧縮。応答を変えずにトークンだけ削る。</div>
+      <div class="td">ツール出力・ログ・<span class="term" data-tip="Retrieval-Augmented Generation（検索拡張生成）。社内文書などの外部知識をAIが検索して回答に活かす仕組み。">RAG</span>の塊をAIに渡す前に圧縮。応答を変えずに<span class="term" data-tip="AIが文章を扱う最小単位。だいたい英語1単語＝1〜2トークン、日本語は1文字＝1〜3トークン。利用料金もトークン量で決まる。">トークン</span>だけ削る。</div>
       <div class="num"><span class="val">60–95%</span><span class="lbl">トークン削減</span></div>
     </div>
     <div class="t e">
       <div class="nm"><span class="chip">ECC</span><span class="role">環境の底上げ</span></div>
       <div class="tt">スキルと記憶をパックで配布</div>
-      <div class="td">Claude Code・Cursor・Codex などのエージェント環境を、スキル・記憶・セキュリティ込みでまとめて強化。</div>
+      <div class="td"><span class="term" data-tip="Anthropic製のコーディング用AIエージェント。ターミナルから直接コードの修正・実行を任せられる。">Claude Code</span>・<span class="term" data-tip="AI機能を内蔵したコードエディタ。VS Codeをベースに、AIと協調しながらコードを書ける。">Cursor</span>・<span class="term" data-tip="OpenAI製のコーディング支援エージェント。コードの生成・修正・実行を会話形式で進められる。">Codex</span> などのエージェント環境を、スキル・記憶・セキュリティ込みでまとめて強化。</div>
       <div class="num"><span class="val">64×261</span><span class="lbl">エージェント×スキル</span></div>
     </div>
     <div class="t c">
       <div class="nm"><span class="chip">codegraph</span><span class="role">コードの地図</span></div>
-      <div class="tt">先にナレッジグラフ化</div>
+      <div class="tt">先に<span class="term" data-tip="情報同士の関係を「点と線」で表した地図のようなデータ。「このファイルはあの関数を呼ぶ」のような関係を整理して持つ。">ナレッジグラフ</span>化</div>
       <div class="td">コードベースを事前にグラフ化。AIがファイル探索を繰り返さず、関連箇所へ最短で到達する。</div>
       <div class="num"><span class="val">−47% / −58%</span><span class="lbl">トークン / ツール呼び出し</span></div>
     </div>
@@ -587,14 +787,14 @@
         <div class="lbl">向いている使い方</div>
         <ul>
           <li><span class="ic" data-icon="check"></span>長いログや検索結果をエージェントに渡す前段に挟む</li>
-          <li><span class="ic" data-icon="check"></span>RAGで取り出した文書束のサイズを抑える</li>
+          <li><span class="ic" data-icon="check"></span><span class="term" data-tip="Retrieval-Augmented Generation（検索拡張生成）。社内文書などの外部知識をAIが検索して回答に活かす仕組み。">RAG</span>で取り出した文書束のサイズを抑える</li>
           <li><span class="ic" data-icon="check"></span>運用コストの上振れを止めたい本番環境</li>
         </ul>
       </div>
     </div>
     <div class="dright">
       <div class="dcard bigstat"><div class="clbl">圧縮率の目安</div><div class="big">60 〜 95%</div><div class="cval">回答は変えずに、入力だけを削れる範囲。</div></div>
-      <div class="dcard"><div class="clbl">提供形態</div><div class="cval">ライブラリ／プロキシ／MCPサーバーの3形態。既存パイプに差し込みやすい。</div></div>
+      <div class="dcard"><div class="clbl">提供形態</div><div class="cval">ライブラリ／<span class="term" data-tip="ProxyのProxy。クライアントとAIの間に立って、通信を中継・加工するサーバー。ここではAIへの入力を自動圧縮する役割を担う。">プロキシ</span>／<span class="term" data-tip="Model Context Protocolの略。AIエージェントに外部ツールや知識を接続するための標準的な仕組み。Claude等が対応。">MCP</span>サーバーの3形態。既存パイプに差し込みやすい。</div></div>
       <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「AIに渡す前のフィルター」。賢くする道具ではなく、賢さを保ったまま軽くする道具。</div></div>
     </div>
   </div>
@@ -635,7 +835,7 @@
       <div class="dhero">
         <div class="ehead"><div class="num">3</div><div class="nm">codegraph</div></div>
         <div class="role">CODE KNOWLEDGE GRAPH</div>
-        <div class="one">コードベースをあらかじめナレッジグラフ化。AIが毎回ファイルを探し回らず、関係する箇所へ最短で到達する。完全ローカルで動く。</div>
+        <div class="one">コードベースをあらかじめ<span class="term" data-tip="情報同士の関係を「点と線」で表した地図のようなデータ。「このファイルはあの関数を呼ぶ」のような関係を整理して持つ。">ナレッジグラフ</span>化。AIが毎回ファイルを探し回らず、関係する箇所へ最短で到達する。<span class="term" data-tip="外部サーバーやクラウドに頼らず、手元のパソコン内で動作すること。社外秘データを扱う場面で重宝する。">完全ローカル</span>で動く。</div>
       </div>
       <div class="dfeat">
         <div class="lbl">向いている使い方</div>
@@ -728,13 +928,13 @@
     <div class="t her">
       <div class="nm"><span class="chip">hermes-agent</span><span class="role">自己成長型</span></div>
       <div class="tt">使うほど賢くなる脳</div>
-      <div class="td">スキルを自分で作り、セッションをまたいで記憶を保持。Telegram・Slack連携にも対応する継続型エージェント。</div>
+      <div class="td">スキルを自分で作り、<span class="term" data-tip="AIとの1回分のやりとりのまとまり。通常、ブラウザを閉じたり別の会話を始めると前の内容は引き継がれない。">セッション</span>をまたいで記憶を保持。Telegram・Slack連携にも対応する継続型エージェント。</div>
       <div class="num"><span class="val">200+</span><span class="lbl">対応モデル</span></div>
     </div>
     <div class="t rea">
       <div class="nm"><span class="chip">Agent-Reach</span><span class="role">情報収集</span></div>
       <div class="tt">ネットを見る目</div>
-      <div class="td">X・Reddit・YouTube・GitHub・Bilibili・小紅書を横断で読めるCLI。APIキー課金なしで動かせる。</div>
+      <div class="td">X・Reddit・YouTube・GitHub・Bilibili・小紅書を横断で読める<span class="term" data-tip="Command Line Interfaceの略。マウスではなく、ターミナルに文字でコマンドを打ち込んで操作する道具。自動化や連携がしやすい。">CLI</span>。<span class="term" data-tip="多くのAIサービスを外部から利用する際に必要な「鍵」。利用量に応じて課金されるのが一般的。">APIキー</span>課金なしで動かせる。</div>
       <div class="num"><span class="val">6</span><span class="lbl">主要プラットフォーム</span></div>
     </div>
     <div class="t las">
@@ -766,7 +966,7 @@
       </div>
     </div>
     <div class="dright">
-      <div class="dcard bigstat"><div class="clbl">対応するもの</div><div class="big">200+ モデル</div><div class="cval">LLMの種類を選ばず、自分の環境に合わせて選べる。</div></div>
+      <div class="dcard bigstat"><div class="clbl">対応するもの</div><div class="big">200+ モデル</div><div class="cval"><span class="term" data-tip="Large Language Model（大規模言語モデル）の略。ChatGPT・Claude・Geminiなど、文章を理解・生成するAIの基盤となるモデル。">LLM</span>の種類を選ばず、自分の環境に合わせて選べる。</div></div>
       <div class="dcard"><div class="clbl">連携先</div><div class="cval">Telegram・Slackなどのチャット環境に常駐させて、チームの問いを受けられる。</div></div>
       <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「忘れず、育つ脳」。一度説明したことを記憶し、使うほどスキルが増えていく。</div></div>
     </div>
@@ -963,7 +1163,7 @@
       <div class="dhero">
         <div class="ehead"><div class="num">3</div><div class="nm">Open-LLM-VTuber</div></div>
         <div class="role">INTERACTIVE AI CHARACTER</div>
-        <div class="one">好きなAIモデルと声で会話できるVTuber。ハンズフリー・割り込み発話に対応し、Live2Dの顔がローカルで動く対話型キャラクター。</div>
+        <div class="one">好きなAIモデルと声で会話できる<span class="term" data-tip="Virtual YouTuberの略。実写ではなく2D/3Dのキャラクターの姿で配信・対話する形式。">VTuber</span>。ハンズフリー・割り込み発話に対応し、<span class="term" data-tip="2Dイラストに動きを付ける技術。1枚絵から表情や口の動きを自然に再現できる。">Live2D</span>の顔がローカルで動く対話型キャラクター。</div>
       </div>
       <div class="dfeat">
         <div class="lbl">向いている使い方</div>
@@ -990,7 +1190,7 @@
       <div class="dhero">
         <div class="ehead"><div class="num">4</div><div class="nm">PaddleOCR</div></div>
         <div class="role">DOCUMENT TO STRUCTURED DATA</div>
-        <div class="one">PDFや画像を、AIがそのまま扱える構造化データに変換するOCRツールキット。軽量で100言語以上に対応する、業務文書の入口。</div>
+        <div class="one">PDFや画像を、AIがそのまま扱える<span class="term" data-tip="表やリストなど、コンピュータが解釈できる規則的な形に整理されたデータ。ただの文章ではなく、項目・値の関係まで保持される。">構造化データ</span>に変換する<span class="term" data-tip="Optical Character Recognitionの略。画像の中の文字を読み取って、編集可能なテキストに変換する技術。">OCR</span>ツールキット。軽量で100言語以上に対応する、業務文書の入口。</div>
       </div>
       <div class="dfeat">
         <div class="lbl">向いている使い方</div>
@@ -1115,8 +1315,8 @@
   <div class="cs">
     <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">ツールから集める</div><div class="cd">流行ったから入れる、を繰り返すと使われない道具が増える。<b>課題から選ぶ。</b></div></div></div>
     <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">全員が別運用</div><div class="cd">人によってプロンプトも手順もバラバラ。<b>テンプレ化して共有する。</b></div></div></div>
-    <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">記録を残さない</div><div class="cd">うまくいった手順が霧散する。<b>Skill化してGitで管理する。</b></div></div></div>
-    <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">属人化する</div><div class="cd">担当者が抜けたら止まる運用は脆い。<b>Git管理で資産を引き継げる形に。</b></div></div></div>
+    <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">記録を残さない</div><div class="cd">うまくいった手順が霧散する。<b><span class="term" data-tip="繰り返し使える「やり方の型」として保存すること。次回からは同じ手順を呼び出すだけで再現できる。">Skill化</span>してGitで管理する。</b></div></div></div>
+    <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">属人化する</div><div class="cd">担当者が抜けたら止まる運用は脆い。<b><span class="term" data-tip="ファイルやドキュメントの変更履歴をGit（バージョン管理ツール）で記録し、チームで共有・追跡できるようにすること。">Git管理</span>で資産を引き継げる形に。</b></div></div></div>
   </div>
 </section>
 
@@ -1193,6 +1393,20 @@ const ICONS = {
 document.querySelectorAll('[data-icon]').forEach(el=>{
   const n=el.getAttribute('data-icon'); if(!ICONS[n])return;
   el.innerHTML=`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${ICONS[n]}</svg>`;
+});
+
+// 専門用語ツールチップ：タップでも開閉できるように
+document.querySelectorAll('.term').forEach(el=>{
+  el.addEventListener('click', e=>{
+    e.stopPropagation();
+    const wasOpen = el.classList.contains('tip-open');
+    document.querySelectorAll('.term.tip-open').forEach(t=>t.classList.remove('tip-open'));
+    if(!wasOpen) el.classList.add('tip-open');
+  });
+});
+// 他の場所をタップで閉じる
+document.addEventListener('click', ()=>{
+  document.querySelectorAll('.term.tip-open').forEach(t=>t.classList.remove('tip-open'));
 });
 
 const slides=Array.from(document.querySelectorAll('.slide'));
