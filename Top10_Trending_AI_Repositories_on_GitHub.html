@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub急上昇AIリポジトリ10選 ─ 完全版ガイド</title>
+<style>
+  :root{
+    --dark:#0B3C40; --teal:#028090; --sea:#00A896; --mint:#02C39A;
+    --slate:#50808E; --amber:#D99100; --coral:#F2784B; --coral-bg:#FCEAE1;
+    --tint:#EAF6F5; --tint2:#F4FAFA; --white:#FFFFFF;
+    --text:#1A2E35; --muted:#5C7079; --line:#E2EDED;
+    /* pillar① — infrastructure */
+    --c-head:#028090; --c-ecc:#00A896; --c-cg:#02C39A;
+    /* pillar② — agents */
+    --c-hermes:#1F6FBF; --c-reach:#8B5CF6; --c-last:#D97757;
+    /* pillar③ — content gen */
+    --c-mp:#E11D48; --c-vox:#F59E0B; --c-vt:#EC4899; --c-ocr:#0EA5E9;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{background:#06292c;
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","YuGothic",Meiryo,"Noto Sans JP",sans-serif;
+    color:var(--text); display:flex; align-items:center; justify-content:center; min-height:100vh; overflow:hidden; -webkit-font-smoothing:antialiased;}
+  .stage{position:relative; width:min(100vw,177.78vh); aspect-ratio:16/9; box-shadow:0 24px 80px rgba(0,0,0,.45); border-radius:6px; overflow:hidden; background:var(--white);}
+  .slide{container-type:size; position:absolute; inset:0; padding:5cqw 5cqw; display:flex; flex-direction:column;
+    opacity:0; visibility:hidden; transform:translateY(1.2cqw);
+    transition:opacity .45s ease, transform .45s ease, visibility .45s; overflow:hidden;}
+  .slide.active{opacity:1; visibility:visible; transform:none;}
+  @media (prefers-reduced-motion:reduce){ .slide{transition:opacity .2s ease; transform:none;} }
+
+  .eyebrow{color:var(--teal); font-weight:700; letter-spacing:.16em; font-size:1.2cqw; margin-bottom:.6cqw;}
+  .h-title{font-size:3.2cqw; font-weight:700; color:var(--text); line-height:1.18;}
+  .lead{font-size:1.4cqw; color:var(--muted); line-height:1.5; margin-top:1cqw;}
+  .badge{border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none; box-shadow:0 .5cqw 1.2cqw rgba(0,0,0,.14);}
+  .badge svg{width:55%; height:55%; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round;}
+  .blob{position:absolute; border-radius:50%; pointer-events:none;}
+  .card{background:var(--tint2); border-radius:1.1cqw; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.10);}
+
+  /* ====== COVER / TOC ====== */
+  #c0{background:var(--dark); justify-content:center;}
+  #c0 .blob.a{width:34cqw;height:34cqw;top:-13cqw;right:-7cqw;background:rgba(2,128,144,.30);}
+  #c0 .blob.b{width:26cqw;height:26cqw;bottom:-10cqw;left:-8cqw;background:rgba(2,195,154,.20);}
+  #c0 .eyebrow{color:var(--mint); font-size:1.25cqw; margin-bottom:1.2cqw;}
+  #c0 h1{font-size:3.6cqw; font-weight:700; color:#fff; line-height:1.15;}
+  #c0 .sub{font-size:1.35cqw; color:#CFE6E4; line-height:1.5; margin-top:1.2cqw;}
+  #c0 .toc{display:grid; grid-template-columns:repeat(5,1fr); gap:1.1cqw; margin-top:2.4cqw;}
+  #c0 .tcard{background:rgba(255,255,255,.06); border:.15cqw solid rgba(255,255,255,.16); border-radius:1cqw;
+             padding:1.5cqw 1.3cqw; cursor:pointer; text-align:left; display:flex; flex-direction:column;
+             transition:transform .15s ease, background .15s ease, border-color .15s ease; font-family:inherit;}
+  #c0 .tcard:hover{transform:translateY(-.4cqw); background:rgba(255,255,255,.12); border-color:var(--mint);}
+  #c0 .tcard:focus-visible{outline:.22cqw solid var(--mint); outline-offset:.2cqw;}
+  #c0 .tnum{width:3.6cqw;height:3.6cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.5cqw;color:#fff;margin-bottom:.9cqw;}
+  #c0 .tcard:nth-child(1) .tnum{background:var(--teal);}
+  #c0 .tcard:nth-child(2) .tnum{background:var(--sea);}
+  #c0 .tcard:nth-child(3) .tnum{background:var(--c-hermes);}
+  #c0 .tcard:nth-child(4) .tnum{background:var(--c-mp);}
+  #c0 .tcard:nth-child(5) .tnum{background:var(--mint);}
+  #c0 .tlabel{font-size:.85cqw; font-weight:700; letter-spacing:.1em; color:var(--mint);}
+  #c0 .tt{font-size:1.35cqw; font-weight:700; color:#fff; margin-top:.2cqw; line-height:1.25;}
+  #c0 .td{font-size:.95cqw; color:#A7C6C4; line-height:1.5; margin-top:.7cqw;}
+  #c0 .tgo{font-size:.9cqw; color:var(--mint); font-weight:700; margin-top:auto; padding-top:.9cqw;}
+  #c0 .chint{font-size:1.05cqw; color:#7FA6A4; margin-top:1.8cqw;}
+
+  /* ============================================================= 導入編 (in1–in7) */
+  #in1{background:var(--dark); justify-content:center;}
+  #in1 .blob.a{width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(2,128,144,.30);}
+  #in1 .blob.b{width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(2,195,154,.22);}
+  #in1 .eyebrow{color:var(--mint); font-size:1.3cqw; margin-bottom:2cqw;}
+  #in1 h1{font-size:4.8cqw; font-weight:700; color:#fff; line-height:1.14;}
+  #in1 .sub{font-size:1.65cqw; color:#CFE6E4; line-height:1.55; margin-top:2.6cqw; max-width:74cqw;}
+  #in1 .tag{font-size:1.2cqw; color:#9FC3C1; font-style:italic; margin-top:3.4cqw;}
+  #in1 .badge{position:absolute; width:8.6cqw; height:8.6cqw; right:9cqw; top:34cqw; background:var(--teal);}
+  #in1 .badge svg{stroke:#fff;}
+
+  #in2 .cards{display:grid; grid-template-columns:1fr 1fr; gap:2.6cqw; margin-top:3cqw;}
+  #in2 .card{padding:2.6cqw;}
+  #in2 .card .badge{width:7cqw; height:7cqw; background:#fff; margin-bottom:1.3cqw;}
+  #in2 .card .lbl{font-size:1cqw; font-weight:700; color:var(--teal); letter-spacing:.1em; margin-bottom:.4cqw;}
+  #in2 .card .ct{font-size:2cqw; font-weight:700; color:var(--text); margin-bottom:.8cqw;}
+  #in2 .card .cd{font-size:1.35cqw; color:var(--muted); line-height:1.55;}
+  #in2 .card:nth-child(1) .badge svg{stroke:var(--teal);}
+  #in2 .card:nth-child(2) .badge svg{stroke:var(--sea);}
+
+  #in3 .row{display:flex; align-items:stretch; gap:2cqw; margin-top:2.4cqw; flex:1;}
+  #in3 .col{flex:1; border-radius:1.1cqw; padding:2.2cqw; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.10);}
+  #in3 .before{background:var(--tint2);} #in3 .after{background:var(--tint); flex:.95;}
+  #in3 .chead{display:flex; align-items:center; gap:1.2cqw; margin-bottom:1.4cqw;}
+  #in3 .badge{width:4.6cqw; height:4.6cqw;}
+  #in3 .before .badge{background:var(--coral-bg);} #in3 .before .badge svg{stroke:var(--coral);}
+  #in3 .after .badge{background:#fff;} #in3 .after .badge svg{stroke:var(--teal);}
+  #in3 .clabel{font-size:1.7cqw; font-weight:700;}
+  #in3 .before .clabel{color:var(--coral);} #in3 .after .clabel{color:var(--teal);}
+  #in3 ul{list-style:none; display:flex; flex-direction:column; gap:1.05cqw;}
+  #in3 li{font-size:1.35cqw; color:var(--text); line-height:1.4; display:flex; gap:1cqw; align-items:flex-start;}
+  #in3 li .ic{width:1.8cqw; height:1.8cqw; flex:none; margin-top:.2cqw;}
+  #in3 li .ic svg{width:100%; height:100%; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
+  #in3 .before li .ic svg{stroke:var(--coral);} #in3 .after li .ic svg{stroke:var(--teal);}
+
+  #in4 .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:2cqw; margin-top:2.8cqw; flex:1;}
+  #in4 .step{position:relative; padding:2.2cqw; display:flex; flex-direction:column;}
+  #in4 .num{width:6cqw;height:6cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:2.8cqw;font-weight:700;box-shadow:0 .5cqw 1.2cqw rgba(0,0,0,.16);}
+  #in4 .step .sl{font-size:1cqw; font-weight:700; letter-spacing:.14em; margin-top:1.4cqw;}
+  #in4 .step .st{font-size:1.75cqw; font-weight:700; color:var(--text); margin-top:.4cqw;}
+  #in4 .step .sd{font-size:1.25cqw; color:var(--muted); line-height:1.5; margin-top:.8cqw;}
+  #in4 .step.c1 .num{background:var(--teal);} #in4 .step.c1 .sl{color:var(--teal);}
+  #in4 .step.c2 .num{background:var(--sea);}  #in4 .step.c2 .sl{color:var(--sea);}
+  #in4 .step.c3 .num{background:var(--mint);} #in4 .step.c3 .sl{color:var(--mint);}
+
+  #in5 .ex{display:flex; flex-direction:column; gap:1.3cqw; margin-top:2.4cqw; flex:1;}
+  #in5 .item{display:flex; align-items:center; gap:1.6cqw; background:var(--tint2); border-radius:.9cqw; padding:1.4cqw 1.9cqw; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.07);}
+  #in5 .badge{width:4.6cqw;height:4.6cqw;background:#fff;} #in5 .badge svg{stroke:var(--teal);}
+  #in5 .tag{font-size:1.15cqw; font-weight:700; color:var(--teal); margin-bottom:.4cqw;}
+  #in5 .q{font-size:1.4cqw; color:var(--text); line-height:1.4;}
+
+  #in6 .tips{display:grid; grid-template-columns:repeat(3,1fr); gap:1.9cqw; margin-top:2.8cqw; flex:1;}
+  #in6 .tip{background:var(--tint); border-radius:1.1cqw; padding:2.2cqw; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.10); display:flex; flex-direction:column;}
+  #in6 .tip .badge{width:6cqw;height:6cqw;background:#fff; margin-bottom:1.4cqw;}
+  #in6 .tip.t1 .badge svg{stroke:var(--teal);} #in6 .tip.t2 .badge svg{stroke:var(--sea);} #in6 .tip.t3 .badge svg{stroke:var(--mint);}
+  #in6 .tt{font-size:1.75cqw; font-weight:700; color:var(--text); margin-bottom:.7cqw;}
+  #in6 .td{font-size:1.32cqw; color:var(--muted); line-height:1.55;}
+
+  #in7{background:var(--dark); align-items:center; justify-content:center; text-align:center;}
+  #in7 .blob.a{width:30cqw;height:30cqw;bottom:-10cqw;left:-10cqw;background:rgba(2,128,144,.28);}
+  #in7 .blob.b{width:26cqw;height:26cqw;top:-9cqw;right:-7cqw;background:rgba(2,195,154,.22);}
+  #in7 .badge{width:8cqw;height:8cqw;background:var(--teal); margin:0 auto;} #in7 .badge svg{stroke:#fff;}
+  #in7 h2{font-size:3.4cqw; font-weight:700; color:#fff; margin-top:2cqw;}
+  #in7 .chk{display:flex; flex-direction:column; gap:.9cqw; margin:2cqw auto 0; text-align:left; width:fit-content;}
+  #in7 .chk div{display:flex; align-items:center; gap:1cqw; font-size:1.4cqw; color:#EAF6F5;}
+  #in7 .chk .ic{width:2cqw;height:2cqw;flex:none;} #in7 .chk .ic svg{width:100%;height:100%;fill:none;stroke:var(--mint);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  #in7 .pill{display:inline-block; margin-top:2.2cqw; background:var(--mint); color:var(--dark); font-weight:700; font-size:1.35cqw; padding:1cqw 2.6cqw; border-radius:5cqw;}
+
+  /* ============================================================= pillar styles (shared by p1-X, p2-X, p3-X) */
+  .pTitle{background:var(--dark) !important; justify-content:center;}
+  .pTitle h1{font-size:4.4cqw; font-weight:700; color:#fff; line-height:1.16;}
+  .pTitle .eyebrow{color:var(--mint); font-size:1.25cqw; margin-bottom:1.8cqw;}
+  .pTitle .sub{font-size:1.55cqw; color:#CFE6E4; line-height:1.55; margin-top:2.2cqw; max-width:74cqw;}
+  .pTitle .names{display:flex; gap:.9cqw; margin-top:2.6cqw; flex-wrap:wrap;}
+  .pTitle .name{font-size:1.1cqw; color:#fff; padding:.6cqw 1.2cqw; border-radius:3cqw; font-weight:700; letter-spacing:.04em;}
+  .pTitle .tag{font-size:1.15cqw; color:#9FC3C1; font-style:italic; margin-top:2cqw;}
+
+  .pBA .cmp{display:flex; gap:2cqw; margin-top:2.4cqw; flex:1;}
+  .pBA .col{flex:1; border-radius:1cqw; padding:2.1cqw; display:flex; flex-direction:column;}
+  .pBA .bad{background:var(--tint2); border:.16cqw solid #F3D9CE;}
+  .pBA .good{background:var(--tint); border:.16cqw solid #BFE4E0;}
+  .pBA .ch{display:flex; align-items:center; gap:1cqw; margin-bottom:1.3cqw;}
+  .pBA .ch .badge{width:3.8cqw;height:3.8cqw;}
+  .pBA .bad .badge{background:#FCEAE1;} .pBA .bad .badge svg{stroke:var(--coral);}
+  .pBA .good .badge{background:#fff;} .pBA .good .badge svg{stroke:var(--teal);}
+  .pBA .cl{font-size:1.6cqw; font-weight:700;}
+  .pBA .bad .cl{color:var(--coral);} .pBA .good .cl{color:var(--teal);}
+  .pBA ul{list-style:none; display:flex; flex-direction:column; gap:1cqw;}
+  .pBA li{font-size:1.3cqw; color:var(--text); line-height:1.45; display:flex; gap:.9cqw; align-items:flex-start;}
+  .pBA li .ic{width:1.7cqw; height:1.7cqw; flex:none; margin-top:.2cqw;}
+  .pBA li .ic svg{width:100%; height:100%; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
+  .pBA .bad li .ic svg{stroke:var(--coral);} .pBA .good li .ic svg{stroke:var(--teal);}
+
+  .pThree .three{display:grid; grid-template-columns:repeat(3,1fr); gap:1.6cqw; margin-top:2.4cqw; flex:1;}
+  .pThree .t{border-radius:1.1cqw; padding:2cqw 1.8cqw; display:flex; flex-direction:column; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.09); background:var(--tint2);}
+  .pThree .t .nm{display:flex; align-items:center; gap:.9cqw; margin-bottom:1cqw; flex-wrap:wrap;}
+  .pThree .t .chip{font-size:.95cqw; font-weight:700; color:#fff; padding:.3cqw .9cqw; border-radius:.5cqw; letter-spacing:.04em;}
+  .pThree .t .role{font-size:1cqw; color:var(--muted); font-weight:600;}
+  .pThree .t .tt{font-size:1.7cqw; font-weight:700; color:var(--text); margin-bottom:.5cqw;}
+  .pThree .t .td{font-size:1.18cqw; color:var(--muted); line-height:1.5; margin-bottom:.9cqw;}
+  .pThree .t .num{margin-top:auto; display:flex; align-items:baseline; gap:.5cqw;}
+  .pThree .t .num .val{font-size:2.1cqw; font-weight:800;}
+  .pThree .t .num .lbl{font-size:.95cqw; color:var(--muted);}
+
+  /* pillar① colors */
+  .pThree .t.h .chip{background:var(--c-head);} .pThree .t.h .val{color:var(--c-head);}
+  .pThree .t.e .chip{background:var(--c-ecc);} .pThree .t.e .val{color:var(--c-ecc);}
+  .pThree .t.c .chip{background:var(--c-cg);} .pThree .t.c .val{color:var(--c-cg);}
+  /* pillar② colors */
+  .pThree .t.her .chip{background:var(--c-hermes);} .pThree .t.her .val{color:var(--c-hermes);}
+  .pThree .t.rea .chip{background:var(--c-reach);} .pThree .t.rea .val{color:var(--c-reach);}
+  .pThree .t.las .chip{background:var(--c-last);} .pThree .t.las .val{color:var(--c-last);}
+
+  .pDetail .detail{display:grid; grid-template-columns:1.35fr 1fr; gap:1.7cqw; margin-top:1.6cqw; flex:1; min-height:0;}
+  .pDetail .dleft{display:flex; flex-direction:column; gap:1.1cqw;}
+  .pDetail .dhero{border-radius:1.1cqw; padding:1.9cqw; color:#fff; box-shadow:0 .8cqw 2cqw rgba(0,0,0,.18);}
+  .pDetail .dhero .ehead{display:flex; align-items:center; gap:1cqw;}
+  .pDetail .dhero .num{width:3.2cqw;height:3.2cqw;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.4cqw;}
+  .pDetail .dhero .nm{font-size:1.95cqw; font-weight:800; letter-spacing:.02em;}
+  .pDetail .dhero .role{font-size:1.02cqw; opacity:.85; margin-top:.9cqw; letter-spacing:.04em; font-weight:600;}
+  .pDetail .dhero .one{font-size:1.4cqw; line-height:1.55; margin-top:.5cqw;}
+  .pDetail .dfeat{background:var(--tint2); border-radius:1cqw; padding:1.5cqw 1.7cqw;}
+  .pDetail .dfeat .lbl{font-size:1.02cqw; font-weight:700; margin-bottom:.6cqw; letter-spacing:.08em;}
+  .pDetail .dfeat ul{list-style:none; display:flex; flex-direction:column; gap:.6cqw;}
+  .pDetail .dfeat li{font-size:1.2cqw; color:var(--text); line-height:1.45; display:flex; gap:.85cqw; align-items:flex-start;}
+  .pDetail .dfeat li .ic{width:1.6cqw; height:1.6cqw; flex:none; margin-top:.2cqw;}
+  .pDetail .dfeat li .ic svg{width:100%; height:100%; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
+  .pDetail .dright{display:flex; flex-direction:column; gap:1.1cqw;}
+  .pDetail .dcard{background:var(--white); border:.16cqw solid var(--line); border-radius:1cqw; padding:1.35cqw 1.55cqw;}
+  .pDetail .dcard .clbl{font-size:.92cqw; font-weight:700; color:var(--muted); letter-spacing:.1em; margin-bottom:.5cqw;}
+  .pDetail .dcard .cval{font-size:1.2cqw; color:var(--text); line-height:1.5;}
+  .pDetail .dcard.bigstat{background:var(--dark); border:none; color:#fff;}
+  .pDetail .dcard.bigstat .clbl{color:#9FC3C1;}
+  .pDetail .dcard.bigstat .cval{color:#fff;}
+  .pDetail .dcard.bigstat .big{font-size:2.3cqw; font-weight:800; color:var(--mint); margin-top:.3cqw; line-height:1.12;}
+  .pDetail .dcard.example{background:var(--tint); border-color:#BFE4E0;}
+
+  /* pillar①hero gradients */
+  .pDetail.h .dhero{background:linear-gradient(135deg,#015e6a,var(--c-head));}
+  .pDetail.h .dfeat .lbl{color:var(--c-head);} .pDetail.h .dfeat li .ic svg{stroke:var(--c-head);}
+  .pDetail.e .dhero{background:linear-gradient(135deg,#017f72,var(--c-ecc));}
+  .pDetail.e .dfeat .lbl{color:var(--c-ecc);} .pDetail.e .dfeat li .ic svg{stroke:var(--c-ecc);}
+  .pDetail.c .dhero{background:linear-gradient(135deg,#019571,var(--c-cg));}
+  .pDetail.c .dfeat .lbl{color:var(--c-cg);} .pDetail.c .dfeat li .ic svg{stroke:var(--c-cg);}
+  /* pillar② */
+  .pDetail.her .dhero{background:linear-gradient(135deg,#0E4A87,var(--c-hermes));}
+  .pDetail.her .dfeat .lbl{color:var(--c-hermes);} .pDetail.her .dfeat li .ic svg{stroke:var(--c-hermes);}
+  .pDetail.her .dcard.bigstat .big{color:#7DB7F3;}
+  .pDetail.rea .dhero{background:linear-gradient(135deg,#5B36B8,var(--c-reach));}
+  .pDetail.rea .dfeat .lbl{color:var(--c-reach);} .pDetail.rea .dfeat li .ic svg{stroke:var(--c-reach);}
+  .pDetail.rea .dcard.bigstat .big{color:#C5A8FA;}
+  .pDetail.las .dhero{background:linear-gradient(135deg,#A8553B,var(--c-last));}
+  .pDetail.las .dfeat .lbl{color:var(--c-last);} .pDetail.las .dfeat li .ic svg{stroke:var(--c-last);}
+  .pDetail.las .dcard.bigstat .big{color:#F2A88B;}
+  /* pillar③ */
+  .pDetail.mp .dhero{background:linear-gradient(135deg,#A8123E,var(--c-mp));}
+  .pDetail.mp .dfeat .lbl{color:var(--c-mp);} .pDetail.mp .dfeat li .ic svg{stroke:var(--c-mp);}
+  .pDetail.mp .dcard.bigstat .big{color:#F47A99;}
+  .pDetail.vox .dhero{background:linear-gradient(135deg,#C27708,var(--c-vox));}
+  .pDetail.vox .dfeat .lbl{color:var(--c-vox);} .pDetail.vox .dfeat li .ic svg{stroke:var(--c-vox);}
+  .pDetail.vox .dcard.bigstat .big{color:#FBC56F;}
+  .pDetail.vt .dhero{background:linear-gradient(135deg,#B5306F,var(--c-vt));}
+  .pDetail.vt .dfeat .lbl{color:var(--c-vt);} .pDetail.vt .dfeat li .ic svg{stroke:var(--c-vt);}
+  .pDetail.vt .dcard.bigstat .big{color:#F590C2;}
+  .pDetail.ocr .dhero{background:linear-gradient(135deg,#0A78AC,var(--c-ocr));}
+  .pDetail.ocr .dfeat .lbl{color:var(--c-ocr);} .pDetail.ocr .dfeat li .ic svg{stroke:var(--c-ocr);}
+  .pDetail.ocr .dcard.bigstat .big{color:#6BC5EC;}
+
+  .pMatrix .table{margin-top:1.8cqw; flex:1; display:flex; flex-direction:column; gap:.7cqw;}
+  .pMatrix .row{display:grid; grid-template-columns:1.4fr 1fr 1.6fr; gap:1cqw; align-items:center; background:var(--tint2); border-radius:.8cqw; padding:1.15cqw 1.5cqw; box-shadow:0 .4cqw 1cqw rgba(0,0,0,.05);}
+  .pMatrix .row.head{background:transparent; box-shadow:none; padding:.3cqw 1.5cqw;}
+  .pMatrix .row.head div{font-size:.95cqw; font-weight:700; color:var(--muted); letter-spacing:.1em;}
+  .pMatrix .case{font-size:1.3cqw; font-weight:700; color:var(--text);}
+  .pMatrix .pick .chip{font-size:1.05cqw; font-weight:700; color:#fff; padding:.35cqw 1cqw; border-radius:.5cqw;}
+  .pMatrix .pick.h .chip{background:var(--c-head);}
+  .pMatrix .pick.e .chip{background:var(--c-ecc);}
+  .pMatrix .pick.c .chip{background:var(--c-cg);}
+  .pMatrix .pick.her .chip{background:var(--c-hermes);}
+  .pMatrix .pick.rea .chip{background:var(--c-reach);}
+  .pMatrix .pick.las .chip{background:var(--c-last);}
+  .pMatrix .pick.mp .chip{background:var(--c-mp);}
+  .pMatrix .pick.vox .chip{background:var(--c-vox);}
+  .pMatrix .pick.vt .chip{background:var(--c-vt);}
+  .pMatrix .pick.ocr .chip{background:var(--c-ocr);}
+  .pMatrix .why{font-size:1.15cqw; color:var(--muted); line-height:1.4;}
+  .pMatrix .foot{font-size:1.05cqw; color:var(--muted); margin-top:1cqw;}
+
+  .pClose{background:var(--dark) !important; align-items:center; justify-content:center; text-align:center;}
+  .pClose .blob.a{width:30cqw;height:30cqw;bottom:-10cqw;left:-10cqw;background:rgba(2,128,144,.28);}
+  .pClose .blob.b{width:26cqw;height:26cqw;top:-9cqw;right:-7cqw;background:rgba(2,195,154,.22);}
+  .pClose .badge{width:7.4cqw;height:7.4cqw;background:var(--teal); margin:0 auto;} .pClose .badge svg{stroke:#fff;}
+  .pClose h2{font-size:3.2cqw; font-weight:700; color:#fff; margin-top:1.8cqw;}
+  .pClose .chk{display:flex; flex-direction:column; gap:.85cqw; margin:1.8cqw auto 0; text-align:left; width:fit-content;}
+  .pClose .chk div{display:flex; align-items:center; gap:1cqw; font-size:1.35cqw; color:#EAF6F5;}
+  .pClose .chk .ic{width:1.9cqw;height:1.9cqw;flex:none;} .pClose .chk .ic svg{width:100%;height:100%;fill:none;stroke:var(--mint);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  .pClose .pill{display:inline-block; margin-top:2cqw; background:var(--mint); color:var(--dark); font-weight:700; font-size:1.3cqw; padding:.9cqw 2.4cqw; border-radius:5cqw;}
+
+  /* pillar③-specific quad (4 media types) */
+  .pQuad .quad{display:grid; grid-template-columns:repeat(4,1fr); gap:1.2cqw; margin-top:2.4cqw; flex:1;}
+  .pQuad .q{border-radius:1cqw; padding:1.7cqw 1.5cqw; display:flex; flex-direction:column; color:#fff; box-shadow:0 .8cqw 2cqw rgba(0,0,0,.18);}
+  .pQuad .q.mp{background:linear-gradient(135deg,#A8123E,var(--c-mp));}
+  .pQuad .q.vox{background:linear-gradient(135deg,#C27708,var(--c-vox));}
+  .pQuad .q.vt{background:linear-gradient(135deg,#B5306F,var(--c-vt));}
+  .pQuad .q.ocr{background:linear-gradient(135deg,#0A78AC,var(--c-ocr));}
+  .pQuad .q .iconwrap{width:3.5cqw;height:3.5cqw;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;margin-bottom:1.1cqw;}
+  .pQuad .q .iconwrap svg{width:55%;height:55%;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .pQuad .q .qt{font-size:1.5cqw; font-weight:700; margin-bottom:.4cqw;}
+  .pQuad .q .qd{font-size:1.05cqw; opacity:.92; line-height:1.5;}
+  .pQuad .q .qn{margin-top:auto; padding-top:1cqw; font-size:.9cqw; font-weight:700; letter-spacing:.06em; opacity:.85;}
+
+  /* ============================================================= 応用編 (ap1-ap8) */
+  #ap1{background:var(--dark); justify-content:center;}
+  #ap1 .blob.a{width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(2,128,144,.30);}
+  #ap1 .blob.b{width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(2,195,154,.22);}
+  #ap1 .eyebrow{color:var(--mint); font-size:1.3cqw; margin-bottom:2cqw;}
+  #ap1 h1{font-size:4.6cqw; font-weight:700; color:#fff; line-height:1.16;}
+  #ap1 .sub{font-size:1.65cqw; color:#CFE6E4; line-height:1.55; margin-top:2.4cqw; max-width:74cqw;}
+  #ap1 .tag{font-size:1.2cqw; color:#9FC3C1; font-style:italic; margin-top:3cqw;}
+  #ap1 .badge{position:absolute; width:8.6cqw; height:8.6cqw; right:9cqw; top:34cqw; background:var(--teal);}
+  #ap1 .badge svg{stroke:#fff;}
+
+  #ap2 .grid{display:grid; grid-template-columns:1fr 1fr; gap:1.7cqw; margin-top:2.8cqw; flex:1;}
+  #ap2 .it{display:flex; gap:1.6cqw; align-items:center; background:var(--tint2); border-radius:1cqw; padding:1.8cqw 2cqw; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.08);}
+  #ap2 .n{width:4.4cqw;height:4.4cqw;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.9cqw;}
+  #ap2 .it:nth-child(1) .n{background:var(--teal);}
+  #ap2 .it:nth-child(2) .n{background:var(--sea);}
+  #ap2 .it:nth-child(3) .n{background:var(--mint);}
+  #ap2 .it:nth-child(4) .n{background:var(--slate);}
+  #ap2 .tt{font-size:1.75cqw; font-weight:700; color:var(--text);}
+  #ap2 .dd{font-size:1.18cqw; color:var(--muted); margin-top:.3cqw; line-height:1.4;}
+
+  /* ap3 flow */
+  #ap3 .flow{display:flex; align-items:stretch; gap:.6cqw; margin-top:2.8cqw; flex:1;}
+  #ap3 .node{flex:1; background:var(--tint2); border-radius:1cqw; padding:1.6cqw 1cqw; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:flex-start; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.07);}
+  #ap3 .nc{width:5.2cqw;height:5.2cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.9cqw;box-shadow:0 .4cqw 1cqw rgba(0,0,0,.16);}
+  #ap3 .node:nth-child(1) .nc{background:var(--c-reach);}
+  #ap3 .node:nth-child(3) .nc{background:var(--c-last);}
+  #ap3 .node:nth-child(5) .nc{background:var(--c-hermes);}
+  #ap3 .node:nth-child(7) .nc{background:var(--mint);}
+  #ap3 .nt{font-size:1.45cqw; font-weight:700; color:var(--text); margin-top:1cqw;}
+  #ap3 .ntool{font-size:1.1cqw; color:var(--muted); margin-top:.5cqw; line-height:1.4;}
+  #ap3 .sep{flex:none; display:flex; align-items:center; color:var(--sea); font-size:2.4cqw; font-weight:700;}
+  #ap3 .foot{font-size:1.15cqw; color:var(--muted); margin-top:1.4cqw; text-align:center;}
+
+  /* ap4 team model */
+  #ap4 .team{display:grid; grid-template-columns:repeat(4,1fr); gap:1.3cqw; margin-top:2.6cqw; flex:1;}
+  #ap4 .role{background:var(--tint2); border-radius:1cqw; padding:1.8cqw 1.5cqw; display:flex; flex-direction:column; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.07);}
+  #ap4 .role .badge{width:4.8cqw;height:4.8cqw;background:#fff; margin-bottom:1.2cqw;}
+  #ap4 .role:nth-child(1) .badge svg{stroke:var(--c-reach);}
+  #ap4 .role:nth-child(2) .badge svg{stroke:var(--c-hermes);}
+  #ap4 .role:nth-child(3) .badge svg{stroke:var(--c-ecc);}
+  #ap4 .role:nth-child(4) .badge svg{stroke:var(--c-mp);}
+  #ap4 .rh{font-size:1.45cqw; font-weight:700; color:var(--text); margin-bottom:.7cqw;}
+  #ap4 .rtools{display:flex; flex-direction:column; gap:.5cqw;}
+  #ap4 .rtools span{font-size:1.05cqw; color:#fff; padding:.3cqw .8cqw; border-radius:.4cqw; align-self:flex-start; font-weight:700;}
+  #ap4 .role:nth-child(1) .rtools span{background:var(--c-reach);}
+  #ap4 .role:nth-child(2) .rtools span{background:var(--c-hermes);}
+  #ap4 .role:nth-child(3) .rtools span{background:var(--c-ecc);}
+  #ap4 .role:nth-child(4) .rtools span{background:var(--c-mp);}
+
+  /* ap5 3 steps */
+  #ap5 .three{display:grid; grid-template-columns:repeat(3,1fr); gap:1.8cqw; margin-top:2.8cqw; flex:1;}
+  #ap5 .st{background:var(--tint2); border-radius:1.1cqw; padding:2.2cqw; display:flex; flex-direction:column; box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.08);}
+  #ap5 .num{width:4.8cqw;height:4.8cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:2.2cqw;margin-bottom:1.1cqw;}
+  #ap5 .st:nth-child(1) .num{background:var(--teal);}
+  #ap5 .st:nth-child(2) .num{background:var(--sea);}
+  #ap5 .st:nth-child(3) .num{background:var(--mint);}
+  #ap5 .stt{font-size:1.7cqw; font-weight:700; color:var(--text); margin-bottom:.6cqw;}
+  #ap5 .std{font-size:1.25cqw; color:var(--muted); line-height:1.5;}
+
+  /* ap6 cautions / anti */
+  #ap6 .cs{display:grid; grid-template-columns:1fr 1fr; gap:1.6cqw; margin-top:2.4cqw; flex:1;}
+  #ap6 .c{display:flex; gap:1.4cqw; align-items:flex-start; background:#fff; border:.16cqw solid var(--line); border-radius:1cqw; padding:1.7cqw 1.9cqw; box-shadow:0 .5cqw 1.4cqw rgba(0,0,0,.05);}
+  #ap6 .c .badge{width:4.2cqw;height:4.2cqw; background:#FDF1E3;}
+  #ap6 .c .badge svg{stroke:var(--amber);}
+  #ap6 .ct{font-size:1.5cqw; font-weight:700; color:var(--text); margin-bottom:.35cqw;}
+  #ap6 .cd{font-size:1.18cqw; color:var(--muted); line-height:1.45;} #ap6 .cd b{color:var(--teal);}
+
+  /* ap7 ESH stack */
+  #ap7 .stack{display:grid; grid-template-columns:repeat(3,1fr); gap:1.6cqw; margin-top:2.6cqw; flex:1;}
+  #ap7 .layer{border-radius:1.1cqw; padding:2.1cqw; color:#fff; display:flex; flex-direction:column; box-shadow:0 .8cqw 2cqw rgba(0,0,0,.18);}
+  #ap7 .layer:nth-child(1){background:linear-gradient(135deg,#017f72,var(--c-ecc));}
+  #ap7 .layer:nth-child(2){background:linear-gradient(135deg,#0E4A87,var(--c-hermes));}
+  #ap7 .layer:nth-child(3){background:linear-gradient(135deg,#5B36B8,var(--c-reach));}
+  #ap7 .lh{font-size:1.05cqw; font-weight:700; opacity:.85; letter-spacing:.1em;}
+  #ap7 .ln{font-size:2cqw; font-weight:800; margin-top:.3cqw;}
+  #ap7 .ld{font-size:1.18cqw; opacity:.94; line-height:1.55; margin-top:.9cqw;}
+  #ap7 .foot{font-size:1.15cqw; color:var(--teal); font-weight:600; margin-top:1.4cqw; text-align:center;}
+
+  /* ap8 closing */
+  #ap8{background:var(--dark); align-items:center; justify-content:center; text-align:center;}
+  #ap8 .blob.a{width:30cqw;height:30cqw;bottom:-10cqw;left:-10cqw;background:rgba(2,128,144,.28);}
+  #ap8 .blob.b{width:26cqw;height:26cqw;top:-9cqw;right:-7cqw;background:rgba(2,195,154,.22);}
+  #ap8 .badge{width:8cqw;height:8cqw;background:var(--teal); margin:0 auto;} #ap8 .badge svg{stroke:#fff;}
+  #ap8 h2{font-size:3.4cqw; font-weight:700; color:#fff; margin-top:2cqw;}
+  #ap8 .chk{display:flex; flex-direction:column; gap:.9cqw; margin:2cqw auto 0; text-align:left; width:fit-content;}
+  #ap8 .chk div{display:flex; align-items:center; gap:1cqw; font-size:1.4cqw; color:#EAF6F5;}
+  #ap8 .chk .ic{width:2cqw;height:2cqw;flex:none;} #ap8 .chk .ic svg{width:100%;height:100%;fill:none;stroke:var(--mint);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  #ap8 .pill{display:inline-block; margin-top:2.2cqw; background:var(--mint); color:var(--dark); font-weight:700; font-size:1.35cqw; padding:1cqw 2.6cqw; border-radius:5cqw;}
+
+  /* controls */
+  .controls{position:fixed; bottom:18px; right:20px; z-index:20; display:flex; align-items:center; gap:10px; font-family:sans-serif;}
+  .controls button{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.14);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s;}
+  .controls button:hover{background:rgba(255,255,255,.28);}
+  .counter{color:#cfe6e4; font-size:13px; min-width:130px; text-align:center; letter-spacing:.04em;}
+  .dots{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:20; display:flex; gap:5px; max-width:60%; flex-wrap:wrap; justify-content:center;}
+  .dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.28);cursor:pointer;transition:.2s;}
+  .dots span.on{background:var(--mint); width:16px; border-radius:3px;}
+  .dots span.sec0{background:rgba(255,255,255,.5);}
+  .hint{position:fixed; bottom:20px; left:20px; z-index:20; color:rgba(255,255,255,.45); font-size:12px; font-family:sans-serif;}
+  @media (max-width:680px){ .hint{display:none;} .counter{min-width:90px;} }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+<section class="slide active" id="c0" data-sec="目次">
+  <span class="blob a"></span><span class="blob b"></span>
+  <div class="eyebrow">完全版ガイド ・ 5部構成</div>
+  <h1>GitHub急上昇<br>AIリポジトリ10選</h1>
+  <p class="sub">AIエージェント時代の主役は、見える機能より「土台と分業」。10ツールを5つの章でやさしく整理しました。</p>
+  <div class="toc">
+    <button class="tcard" data-go="in1">
+      <div class="tnum">1</div>
+      <div class="tlabel">STEP 1</div>
+      <div class="tt">導入編</div>
+      <div class="td">何が起きているか、全体像をつかむ。</div>
+      <div class="tgo">始める →</div>
+    </button>
+    <button class="tcard" data-go="p1_1">
+      <div class="tnum">2</div>
+      <div class="tlabel">STEP 2 ・ 柱①</div>
+      <div class="tt">AI基盤を選ぶ</div>
+      <div class="td">headroom / ECC / codegraph。土台を整える3つ。</div>
+      <div class="tgo">始める →</div>
+    </button>
+    <button class="tcard" data-go="p2_1">
+      <div class="tnum">3</div>
+      <div class="tlabel">STEP 2 ・ 柱②</div>
+      <div class="tt">エージェントを選ぶ</div>
+      <div class="td">hermes / Reach / last30days。続けて働くAI。</div>
+      <div class="tgo">始める →</div>
+    </button>
+    <button class="tcard" data-go="p3_1">
+      <div class="tnum">4</div>
+      <div class="tlabel">STEP 2 ・ 柱③</div>
+      <div class="tt">コンテンツ生成</div>
+      <div class="td">動画・音声・キャラ・文書化の4ツール。</div>
+      <div class="tgo">始める →</div>
+    </button>
+    <button class="tcard" data-go="ap1">
+      <div class="tnum">5</div>
+      <div class="tlabel">STEP 3</div>
+      <div class="tt">応用編</div>
+      <div class="td">仕組み化してチームで運用する。</div>
+      <div class="tgo">始める →</div>
+    </button>
+  </div>
+  <div class="chint">そのまま進めば、導入 → 実践①②③ → 応用 の順で見られます。右下の ≡ でいつでも目次に戻れます。</div>
+</section>
+
+<!-- 導入編 -->
+<section class="slide" id="in1" data-sec="導入編">
+  <span class="blob a"></span><span class="blob b"></span>
+  <div class="eyebrow">STEP 1 ・ 導入編</div>
+  <h1>10個のリポジトリで、<br>AIの「いま」が見える。</h1>
+  <p class="sub">GitHubで急上昇した10ツールは、エージェント時代の構成要素です。<br>個別機能よりも「カテゴリと役割」から理解していきます。</p>
+  <p class="tag">まずは全体像をつかむことから</p>
+  <div class="badge" data-icon="compass"></div>
+</section>
+
+<section class="slide" id="in2" data-sec="導入編">
+  <h2 class="h-title">今、何が起きているのか</h2>
+  <p class="lead">AIそのものより、AIを支える"仕組み"が急速に進化しています。</p>
+  <div class="cards">
+    <div class="card"><div class="badge" data-icon="message"></div><div class="lbl">これまで</div><div class="ct">AIチャット中心</div><div class="cd">人が質問して、AIが答える。やりとりは単発で完結し、毎回最初から説明していました。</div></div>
+    <div class="card"><div class="badge" data-icon="cpu"></div><div class="lbl">これから</div><div class="ct">AIエージェント中心</div><div class="cd">調査・記憶・実行までAIが連続で担う。「相棒」のように継続して働く時代へ。</div></div>
+  </div>
+</section>
+
+<section class="slide" id="in3" data-sec="導入編">
+  <h2 class="h-title">AI活用は、ここまで変わる</h2>
+  <div class="row">
+    <div class="col before">
+      <div class="chead"><div class="badge" data-icon="frown"></div><span class="clabel">これまで</span></div>
+      <ul>
+        <li><span class="ic" data-icon="dash"></span>毎回ゼロから説明し直す</li>
+        <li><span class="ic" data-icon="dash"></span>情報収集は手作業のコピペ</li>
+        <li><span class="ic" data-icon="dash"></span>単発利用で成果が積み上がらない</li>
+        <li><span class="ic" data-icon="dash"></span>使い方が人それぞれで再現できない</li>
+      </ul>
+    </div>
+    <div class="col after">
+      <div class="chead"><div class="badge" data-icon="smile"></div><span class="clabel">これから</span></div>
+      <ul>
+        <li><span class="ic" data-icon="check"></span>AIが文脈を記憶して成長する</li>
+        <li><span class="ic" data-icon="check"></span>ネットを横断して自動で収集する</li>
+        <li><span class="ic" data-icon="check"></span>使うほど、スキルが資産になる</li>
+        <li><span class="ic" data-icon="check"></span>同じ手順で誰でも再現できる</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="in4" data-sec="導入編">
+  <h2 class="h-title">まず見るべき、3つのカテゴリ</h2>
+  <div class="steps">
+    <div class="card step c1"><div class="num">1</div><div class="sl">STEP 1</div><div class="st">AI基盤</div><div class="sd">AIの土台。トークン削減・環境整備・コード理解を担う、目立たない縁の下の存在。</div></div>
+    <div class="card step c2"><div class="num">2</div><div class="sl">STEP 2</div><div class="st">AIエージェント</div><div class="sd">続けて働くAI。記憶・探索・調査を任せられる、エージェント時代の主役。</div></div>
+    <div class="card step c3"><div class="num">3</div><div class="sl">STEP 3</div><div class="st">コンテンツ生成</div><div class="sd">表現を作る道具。動画・音声・キャラ・文書化、媒体ごとに専用ツールがある。</div></div>
+  </div>
+</section>
+
+<section class="slide" id="in5" data-sec="導入編">
+  <h2 class="h-title">すぐ試せる、活用イメージ</h2>
+  <p class="lead">いきなり全部を試さなくて大丈夫。気になる1つから始めてください。</p>
+  <div class="ex">
+    <div class="item"><div class="badge" data-icon="search"></div><div><div class="tag">情報収集</div><div class="q">「Agent-Reachで、競合のSNS発信を一気に集めてくる」</div></div></div>
+    <div class="item"><div class="badge" data-icon="video"></div><div><div class="tag">動画作成</div><div class="q">「MoneyPrinterTurboで、キーワードからショート動画を作る」</div></div></div>
+    <div class="item"><div class="badge" data-icon="file"></div><div><div class="tag">文書整理</div><div class="q">「PaddleOCRで、紙の帳票をAIに読める形に変換する」</div></div></div>
+  </div>
+</section>
+
+<section class="slide" id="in6" data-sec="導入編">
+  <h2 class="h-title">選び方は、シンプルでいい</h2>
+  <p class="lead">流行を追うのではなく、自分の困りごとから出発します。</p>
+  <div class="tips">
+    <div class="tip t1"><div class="badge" data-icon="target"></div><div class="tt">① 課題から選ぶ</div><div class="td">「いま、自分が一番困っていること」を1つだけ書き出して、それを解くツールを選ぶ。</div></div>
+    <div class="tip t2"><div class="badge" data-icon="seedling"></div><div class="tt">② 1つだけ試す</div><div class="td">同時に何個も入れないこと。1つ試して、効果を確かめてから次へ。</div></div>
+    <div class="tip t3"><div class="badge" data-icon="bookmark"></div><div class="tt">③ 成果を記録する</div><div class="td">「何分削れたか」「何件こなせたか」を残す。次の判断材料になる。</div></div>
+  </div>
+</section>
+
+<section class="slide" id="in7" data-sec="導入編">
+  <span class="blob a"></span><span class="blob b"></span>
+  <div class="badge" data-icon="listcheck"></div>
+  <h2>まずは、カテゴリを理解しよう</h2>
+  <div class="chk">
+    <div><span class="ic" data-icon="check"></span>AI基盤・エージェント・生成系の役割を言える</div>
+    <div><span class="ic" data-icon="check"></span>10ツールの分類を頭に置けた</div>
+    <div><span class="ic" data-icon="check"></span>自分の課題を1つ書き出した</div>
+    <div><span class="ic" data-icon="check"></span>まず試してみたい候補を決めた</div>
+  </div>
+  <div class="pill">次は、実践編 ─ 用途別に選び分ける</div>
+</section>
+
+<!-- 実践編 柱① -->
+<section class="slide pTitle" id="p1_1" data-sec="実践編・柱①">
+  <span class="blob a" style="width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(2,128,144,.30);"></span>
+  <span class="blob b" style="width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(2,195,154,.22);"></span>
+  <div class="eyebrow">STEP 2 ・ 柱① AI基盤を選ぶ</div>
+  <h1>AIの「足腰」を、<br>3つの基盤で整える。</h1>
+  <p class="sub">エージェント時代の主役は、目立つ機能より「土台」。トークン・環境・コード理解の3つを押さえれば、上に乗るAIが一段速く・賢くなります。</p>
+  <div class="names">
+    <span class="name" style="background:var(--c-head);">headroom</span>
+    <span class="name" style="background:var(--c-ecc);">ECC</span>
+    <span class="name" style="background:var(--c-cg);">codegraph</span>
+  </div>
+  <p class="tag">この3つは競合ではなく、役割の異なる土台です</p>
+</section>
+
+<section class="slide pBA" id="p1_2" data-sec="実践編・柱①">
+  <div class="eyebrow">なぜ「基盤」なのか</div>
+  <h2 class="h-title">高機能なAIだけでは、足りない</h2>
+  <div class="cmp">
+    <div class="col bad">
+      <div class="ch"><div class="badge" data-icon="alert"></div><span class="cl">基盤がないと</span></div>
+      <ul>
+        <li><span class="ic" data-icon="dash"></span>毎回大量の文脈を投げ、トークンを浪費する</li>
+        <li><span class="ic" data-icon="dash"></span>環境設定がバラバラで、挙動が安定しない</li>
+        <li><span class="ic" data-icon="dash"></span>コードを毎回探索させ、応答が遅くブレる</li>
+        <li><span class="ic" data-icon="dash"></span>スキル・記憶が個人に閉じてしまう</li>
+      </ul>
+    </div>
+    <div class="col good">
+      <div class="ch"><div class="badge" data-icon="check"></div><span class="cl">基盤を整えると</span></div>
+      <ul>
+        <li><span class="ic" data-icon="check"></span>渡す前に圧縮して、コストと速度を両立できる</li>
+        <li><span class="ic" data-icon="check"></span>環境・スキル・記憶がパックで揃い再現性が出る</li>
+        <li><span class="ic" data-icon="check"></span>コード構造を持たせ、ピンポイントで答えさせる</li>
+        <li><span class="ic" data-icon="check"></span>チームで同じ土台を共有でき属人化が解ける</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide pThree" id="p1_3" data-sec="実践編・柱①">
+  <div class="eyebrow">基盤の三役</div>
+  <h2 class="h-title">役割が違う、3つの土台</h2>
+  <div class="three">
+    <div class="t h">
+      <div class="nm"><span class="chip">headroom</span><span class="role">入力の節約</span></div>
+      <div class="tt">渡す前に圧縮</div>
+      <div class="td">ツール出力・ログ・RAGの塊をAIに渡す前に圧縮。応答を変えずにトークンだけ削る。</div>
+      <div class="num"><span class="val">60–95%</span><span class="lbl">トークン削減</span></div>
+    </div>
+    <div class="t e">
+      <div class="nm"><span class="chip">ECC</span><span class="role">環境の底上げ</span></div>
+      <div class="tt">スキルと記憶をパックで配布</div>
+      <div class="td">Claude Code・Cursor・Codex などのエージェント環境を、スキル・記憶・セキュリティ込みでまとめて強化。</div>
+      <div class="num"><span class="val">64×261</span><span class="lbl">エージェント×スキル</span></div>
+    </div>
+    <div class="t c">
+      <div class="nm"><span class="chip">codegraph</span><span class="role">コードの地図</span></div>
+      <div class="tt">先にナレッジグラフ化</div>
+      <div class="td">コードベースを事前にグラフ化。AIがファイル探索を繰り返さず、関連箇所へ最短で到達する。</div>
+      <div class="num"><span class="val">−47% / −58%</span><span class="lbl">トークン / ツール呼び出し</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail h" id="p1_4" data-sec="実践編・柱①">
+  <div class="eyebrow">基盤 ①</div>
+  <h2 class="h-title">headroom ─ 渡す前に、軽くする</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">1</div><div class="nm">headroom</div></div>
+        <div class="role">INPUT COMPRESSION</div>
+        <div class="one">ツール出力・ログ・ファイル・RAGの塊を、AIに渡す前に圧縮。応答品質を保ったまま、入力トークンだけを大幅に減らす。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>長いログや検索結果をエージェントに渡す前段に挟む</li>
+          <li><span class="ic" data-icon="check"></span>RAGで取り出した文書束のサイズを抑える</li>
+          <li><span class="ic" data-icon="check"></span>運用コストの上振れを止めたい本番環境</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">圧縮率の目安</div><div class="big">60 〜 95%</div><div class="cval">回答は変えずに、入力だけを削れる範囲。</div></div>
+      <div class="dcard"><div class="clbl">提供形態</div><div class="cval">ライブラリ／プロキシ／MCPサーバーの3形態。既存パイプに差し込みやすい。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「AIに渡す前のフィルター」。賢くする道具ではなく、賢さを保ったまま軽くする道具。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail e" id="p1_5" data-sec="実践編・柱①">
+  <div class="eyebrow">基盤 ②</div>
+  <h2 class="h-title">ECC ─ エージェント環境を、まとめて底上げ</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">2</div><div class="nm">ECC</div></div>
+        <div class="role">AGENT ENVIRONMENT PACK</div>
+        <div class="one">Claude Code・Cursor・Codex などのエージェント環境を、スキル・記憶・セキュリティを1パックで揃えて強化するブースト集。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>チーム全員の開発エージェントを同じ土台に揃える</li>
+          <li><span class="ic" data-icon="check"></span>スキルや記憶を個人運用から組織運用へ移す</li>
+          <li><span class="ic" data-icon="check"></span>セキュリティ要件を満たした状態で配布する</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">同梱されるもの</div><div class="big">64 × 261</div><div class="cval">64エージェント、261スキル。すぐ動く形でまとまっている。</div></div>
+      <div class="dcard"><div class="clbl">対応する主な環境</div><div class="cval">Claude Code／Cursor／Codex などのコーディング系エージェントをまたいで適用。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「個人技を、組織の標準装備に」。属人化していたスキルを共有資産に変える。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail c" id="p1_6" data-sec="実践編・柱①">
+  <div class="eyebrow">基盤 ③</div>
+  <h2 class="h-title">codegraph ─ コードに、先に地図を持たせる</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">3</div><div class="nm">codegraph</div></div>
+        <div class="role">CODE KNOWLEDGE GRAPH</div>
+        <div class="one">コードベースをあらかじめナレッジグラフ化。AIが毎回ファイルを探し回らず、関係する箇所へ最短で到達する。完全ローカルで動く。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>大規模リポジトリでのコード理解・改修</li>
+          <li><span class="ic" data-icon="check"></span>外部にコードを出せないクローズド環境</li>
+          <li><span class="ic" data-icon="check"></span>ツール呼び出しの暴発を抑えたいエージェント運用</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">ベンチマーク平均</div><div class="big">−47% / −58%</div><div class="cval">トークン消費と、ツール呼び出し回数。どちらも大きく下がる。</div></div>
+      <div class="dcard"><div class="clbl">動作環境</div><div class="cval">完全ローカル動作。コードを外に出さずに、構造理解を持たせられる。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「探さずに、知っている状態」。AIに地図を渡すことで、毎回の探索を省く。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pMatrix" id="p1_7" data-sec="実践編・柱①">
+  <div class="eyebrow">どれを選ぶか</div>
+  <h2 class="h-title">課題から、基盤を選ぶ</h2>
+  <div class="table">
+    <div class="row head"><div>こんな課題があるなら</div><div>選ぶ基盤</div><div>効く理由</div></div>
+    <div class="row"><div class="case">トークン代が膨らんでいる</div><div class="pick h"><span class="chip">headroom</span></div><div class="why">入力を渡す前に圧縮。回答は変えずに、コストと速度だけを下げる。</div></div>
+    <div class="row"><div class="case">エージェント環境がバラバラ</div><div class="pick e"><span class="chip">ECC</span></div><div class="why">スキル・記憶・セキュリティを1パックで配布。チームの土台を揃える。</div></div>
+    <div class="row"><div class="case">大きなコードベースで迷子</div><div class="pick c"><span class="chip">codegraph</span></div><div class="why">構造を先に持たせ、ファイル探索ではなく関係グラフで答えさせる。</div></div>
+    <div class="row"><div class="case">機密コードを外に出せない</div><div class="pick c"><span class="chip">codegraph</span></div><div class="why">完全ローカル動作。社外サービスにコードを渡さずに済む。</div></div>
+    <div class="row"><div class="case">スキル・記憶が個人依存</div><div class="pick e"><span class="chip">ECC</span></div><div class="why">64エージェント・261スキルを共有資産として配布できる。</div></div>
+  </div>
+  <div class="foot">3つは競合せず、組み合わせて効くタイプ。まずは一番痛い課題に当てる1つから始めるのが近道です。</div>
+</section>
+
+<section class="slide pClose" id="p1_8" data-sec="実践編・柱①">
+  <span class="blob a"></span><span class="blob b"></span>
+  <div class="badge" data-icon="listcheck"></div>
+  <h2>基盤を整えれば、上のAIが伸びる</h2>
+  <div class="chk">
+    <div><span class="ic" data-icon="check"></span>3つの基盤がそれぞれ何を解くかを言える</div>
+    <div><span class="ic" data-icon="check"></span>自社の課題に対し、まず使う1つを選べる</div>
+    <div><span class="ic" data-icon="check"></span>組み合わせで効くことを理解した</div>
+    <div><span class="ic" data-icon="check"></span>導入の前に、検証範囲を決めた</div>
+  </div>
+  <div class="pill">次は、柱② AIエージェントを選ぶ</div>
+</section>
+
+<!-- 実践編 柱② -->
+<section class="slide pTitle" id="p2_1" data-sec="実践編・柱②">
+  <span class="blob a" style="width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(31,111,191,.30);"></span>
+  <span class="blob b" style="width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(139,92,246,.22);"></span>
+  <div class="eyebrow">STEP 2 ・ 柱② AIエージェントを選ぶ</div>
+  <h1>AIに「動く力」を、<br>3体のエージェントで持たせる。</h1>
+  <p class="sub">基盤の上に乗せるのは、調べて・憶えて・育つAI。今回の3つは「自分で育つ脳」「ネットを見る目」「テーマを掘る手」と、それぞれ役割が違います。</p>
+  <div class="names">
+    <span class="name" style="background:var(--c-hermes);">hermes-agent</span>
+    <span class="name" style="background:var(--c-reach);">Agent-Reach</span>
+    <span class="name" style="background:var(--c-last);">last30days-skill</span>
+  </div>
+  <p class="tag">この3体は、組み合わせて使うことで真価が出ます</p>
+</section>
+
+<section class="slide pBA" id="p2_2" data-sec="実践編・柱②">
+  <div class="eyebrow">なぜ「エージェント」なのか</div>
+  <h2 class="h-title">単発のAIから、続けて働くAIへ</h2>
+  <div class="cmp">
+    <div class="col bad">
+      <div class="ch"><div class="badge" data-icon="alert"></div><span class="cl">エージェントがないと</span></div>
+      <ul>
+        <li><span class="ic" data-icon="dash"></span>毎回ゼロから前提を説明し直す</li>
+        <li><span class="ic" data-icon="dash"></span>情報収集は手作業のコピペ作業</li>
+        <li><span class="ic" data-icon="dash"></span>調査結果が個人のメモに埋もれる</li>
+        <li><span class="ic" data-icon="dash"></span>使い方が人それぞれで再現できない</li>
+      </ul>
+    </div>
+    <div class="col good">
+      <div class="ch"><div class="badge" data-icon="check"></div><span class="cl">エージェントが入ると</span></div>
+      <ul>
+        <li><span class="ic" data-icon="check"></span>セッションをまたいで文脈を憶えてくれる</li>
+        <li><span class="ic" data-icon="check"></span>ネットを横断して必要な情報を取ってくる</li>
+        <li><span class="ic" data-icon="check"></span>テーマを指定すれば根拠付きで要約する</li>
+        <li><span class="ic" data-icon="check"></span>スキルとして共有でき、誰でも同じ手順を踏める</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide pThree" id="p2_3" data-sec="実践編・柱②">
+  <div class="eyebrow">エージェントの三役</div>
+  <h2 class="h-title">役割が違う、3体のエージェント</h2>
+  <div class="three">
+    <div class="t her">
+      <div class="nm"><span class="chip">hermes-agent</span><span class="role">自己成長型</span></div>
+      <div class="tt">使うほど賢くなる脳</div>
+      <div class="td">スキルを自分で作り、セッションをまたいで記憶を保持。Telegram・Slack連携にも対応する継続型エージェント。</div>
+      <div class="num"><span class="val">200+</span><span class="lbl">対応モデル</span></div>
+    </div>
+    <div class="t rea">
+      <div class="nm"><span class="chip">Agent-Reach</span><span class="role">情報収集</span></div>
+      <div class="tt">ネットを見る目</div>
+      <div class="td">X・Reddit・YouTube・GitHub・Bilibili・小紅書を横断で読めるCLI。APIキー課金なしで動かせる。</div>
+      <div class="num"><span class="val">6</span><span class="lbl">主要プラットフォーム</span></div>
+    </div>
+    <div class="t las">
+      <div class="nm"><span class="chip">last30days-skill</span><span class="role">市場調査</span></div>
+      <div class="tt">テーマを掘る手</div>
+      <div class="td">どんなテーマでも複数ソースを横断調査し、反応の大きい情報から根拠付きで要約してくれる調査スキル。</div>
+      <div class="num"><span class="val">5+</span><span class="lbl">横断ソース</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail her" id="p2_4" data-sec="実践編・柱②">
+  <div class="eyebrow">エージェント ①</div>
+  <h2 class="h-title">hermes-agent ─ 使うほど、賢くなる</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">1</div><div class="nm">hermes-agent</div></div>
+        <div class="role">SELF-GROWING AGENT</div>
+        <div class="one">Nous Research製の自己成長型エージェント。スキルを自分で作り、セッションをまたいで記憶を保持する。会話相手のAIから、続けて働くAIへ。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>業務文脈を覚えさせて、毎回の前提説明をなくす</li>
+          <li><span class="ic" data-icon="check"></span>繰り返す作業をスキルとして自分で育てる</li>
+          <li><span class="ic" data-icon="check"></span>Telegram・Slack上で常駐し、チームの問いに答える</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">対応するもの</div><div class="big">200+ モデル</div><div class="cval">LLMの種類を選ばず、自分の環境に合わせて選べる。</div></div>
+      <div class="dcard"><div class="clbl">連携先</div><div class="cval">Telegram・Slackなどのチャット環境に常駐させて、チームの問いを受けられる。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「忘れず、育つ脳」。一度説明したことを記憶し、使うほどスキルが増えていく。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail rea" id="p2_5" data-sec="実践編・柱②">
+  <div class="eyebrow">エージェント ②</div>
+  <h2 class="h-title">Agent-Reach ─ ネットを「見る目」を渡す</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">2</div><div class="nm">Agent-Reach</div></div>
+        <div class="role">WEB OBSERVATION CLI</div>
+        <div class="one">AIエージェントにネットを"見る目"を与えるCLI。SNS・動画・コード共有まで横断で読めて、APIキー課金なしで動く。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>競合・業界・新技術のリアルタイムな動きを掴む</li>
+          <li><span class="ic" data-icon="check"></span>SNS上の反応や口コミを横断で集める</li>
+          <li><span class="ic" data-icon="check"></span>API利用料を気にせず大量の調査を回す</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">対応プラットフォーム</div><div class="big">X / Reddit / YouTube<br>GitHub / Bilibili / 小紅書</div><div class="cval">6つの主要ソースを1つのCLIから横断できる。</div></div>
+      <div class="dcard"><div class="clbl">運用コスト</div><div class="cval">APIキー課金なしで動作。トライアルや大量実行で費用を気にしなくていい。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「AIに、目を渡す」。文字だけのAIをネットの現場につなぐ役割を担う。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail las" id="p2_6" data-sec="実践編・柱②">
+  <div class="eyebrow">エージェント ③</div>
+  <h2 class="h-title">last30days-skill ─ テーマを、深く掘る</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">3</div><div class="nm">last30days-skill</div></div>
+        <div class="role">THEMATIC RESEARCH SKILL</div>
+        <div class="one">どんなテーマでも複数ソースを横断調査し、反応の大きい情報から根拠付きで要約する調査スキル。AIエージェント用の「分析の型」として動く。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>市場調査・トレンド分析の初動を一気に終わらせる</li>
+          <li><span class="ic" data-icon="check"></span>レポートの根拠資料を出典付きで集める</li>
+          <li><span class="ic" data-icon="check"></span>定期テーマの調査を仕組みとして回す</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">横断するソース</div><div class="big">Reddit / X / YouTube<br>Hacker News / Web</div><div class="cval">SNSからニュース・解説まで、5つ以上のソースをまたいで分析する。</div></div>
+      <div class="dcard"><div class="clbl">出力の特徴</div><div class="cval">反応の大きい情報を優先し、根拠（出典）付きで要約。レポートにそのまま使える形で返ってくる。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「テーマを渡せば、まとめてくれる」。エージェントに渡す調査の型として活用できる。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pMatrix" id="p2_7" data-sec="実践編・柱②">
+  <div class="eyebrow">どれを選ぶか</div>
+  <h2 class="h-title">課題から、エージェントを選ぶ</h2>
+  <div class="table">
+    <div class="row head"><div>こんな課題があるなら</div><div>選ぶエージェント</div><div>効く理由</div></div>
+    <div class="row"><div class="case">毎回前提を説明し直している</div><div class="pick her"><span class="chip">hermes-agent</span></div><div class="why">セッションをまたいで記憶を保持。一度伝えたことは覚えてくれる。</div></div>
+    <div class="row"><div class="case">SNSの反応をリアルタイムで掴みたい</div><div class="pick rea"><span class="chip">Agent-Reach</span></div><div class="why">X・Redditなど6プラットフォームを横断。API課金なしで回せる。</div></div>
+    <div class="row"><div class="case">市場調査の初動を一気に終わらせたい</div><div class="pick las"><span class="chip">last30days-skill</span></div><div class="why">複数ソースを横断し、根拠付きで要約。レポート素材がそのまま揃う。</div></div>
+    <div class="row"><div class="case">チームの問い合わせ窓口を自動化したい</div><div class="pick her"><span class="chip">hermes-agent</span></div><div class="why">Telegram・Slackに常駐して、業務知識を学習しながら応答できる。</div></div>
+    <div class="row"><div class="case">定期テーマを継続調査したい</div><div class="pick las"><span class="chip">last30days-skill</span></div><div class="why">スキル化されているので、同じテーマを定期実行する仕組みに組み込める。</div></div>
+  </div>
+  <div class="foot">3体は競合ではなく、つないで使うと真価が出るタイプ。Reachで集め、last30daysでまとめ、Hermesに憶えさせる、が王道です。</div>
+</section>
+
+<section class="slide pClose" id="p2_8" data-sec="実践編・柱②">
+  <span class="blob a"></span><span class="blob b"></span>
+  <div class="badge" data-icon="listcheck"></div>
+  <h2>エージェントが揃えば、AIが「働き始める」</h2>
+  <div class="chk">
+    <div><span class="ic" data-icon="check"></span>3体のエージェントの役割を言える</div>
+    <div><span class="ic" data-icon="check"></span>自社の課題に対し、まず使う1体を選べる</div>
+    <div><span class="ic" data-icon="check"></span>つないで使うと効くことを理解した</div>
+    <div><span class="ic" data-icon="check"></span>導入の前に、検証範囲を決めた</div>
+  </div>
+  <div class="pill">次は、柱③ コンテンツ生成を選ぶ</div>
+</section>
+
+<!-- 実践編 柱③ -->
+<section class="slide pTitle" id="p3_1" data-sec="実践編・柱③">
+  <span class="blob a" style="width:34cqw;height:34cqw;top:-12cqw;right:-6cqw;background:rgba(225,29,72,.20);"></span>
+  <span class="blob b" style="width:27cqw;height:27cqw;bottom:-9cqw;right:-3cqw;background:rgba(236,72,153,.18);"></span>
+  <div class="eyebrow">STEP 2 ・ 柱③ コンテンツ生成を選ぶ</div>
+  <h1>「中身」を作るAIを、<br>媒体ごとに使い分ける。</h1>
+  <p class="sub">基盤とエージェントの上に乗せるのは、人の代わりに表現を生む4つの道具。動画・音声・キャラ・文書化、それぞれに専用のAIがあります。</p>
+  <div class="names">
+    <span class="name" style="background:var(--c-mp);">MoneyPrinterTurbo</span>
+    <span class="name" style="background:var(--c-vox);">VoxCPM</span>
+    <span class="name" style="background:var(--c-vt);">Open-LLM-VTuber</span>
+    <span class="name" style="background:var(--c-ocr);">PaddleOCR</span>
+  </div>
+  <p class="tag">"何を作るか"で、選ぶ道具が変わります</p>
+</section>
+
+<section class="slide pQuad" id="p3_2" data-sec="実践編・柱③">
+  <div class="eyebrow">コンテンツの四角形</div>
+  <h2 class="h-title">媒体ごとに、専用のAIがある</h2>
+  <div class="quad">
+    <div class="q mp">
+      <div class="iconwrap"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+      <div class="qt">動画</div>
+      <div class="qd">台本・素材・字幕・BGMまで自動生成。SNS向け短尺動画の量産に。</div>
+      <div class="qn">→ MoneyPrinterTurbo</div>
+    </div>
+    <div class="q vox">
+      <div class="iconwrap"><svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3v4zM3 19a2 2 0 0 0 2 2h1v-6H3v4z"/></svg></div>
+      <div class="qt">音声</div>
+      <div class="qd">多言語の読み上げから本人そっくりの声まね、声のデザインまで一手に。</div>
+      <div class="qn">→ VoxCPM</div>
+    </div>
+    <div class="q vt">
+      <div class="iconwrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14c-4 0-8 2-8 6v1h16v-1c0-4-4-6-8-6z"/></svg></div>
+      <div class="qt">キャラ会話</div>
+      <div class="qd">好きなAIと声で会話できるVTuber。Live2Dの顔がローカルで動く。</div>
+      <div class="qn">→ Open-LLM-VTuber</div>
+    </div>
+    <div class="q ocr">
+      <div class="iconwrap"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="17" y2="13"/><line x1="7" y1="17" x2="13" y2="17"/></svg></div>
+      <div class="qt">文書化</div>
+      <div class="qd">PDFや画像を、AIがそのまま扱える構造化データへ。100言語以上に対応。</div>
+      <div class="qn">→ PaddleOCR</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail mp" id="p3_3" data-sec="実践編・柱③">
+  <div class="eyebrow">生成ツール ① ・ 動画</div>
+  <h2 class="h-title">MoneyPrinterTurbo ─ 短尺動画を、丸ごと自動で</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">1</div><div class="nm">MoneyPrinterTurbo</div></div>
+        <div class="role">SHORT-FORM VIDEO GENERATOR</div>
+        <div class="one">キーワードを入れるだけで、台本・素材・字幕・BGMまで自動生成。縦9:16も横16:9も出せる、SNS時代の動画自動生産機。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>SNS用ショート動画を継続的に量産する</li>
+          <li><span class="ic" data-icon="check"></span>記事・ブログを動画化して再配信する</li>
+          <li><span class="ic" data-icon="check"></span>素材集めや編集の手間を一気に省く</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">自動生成される要素</div><div class="big">台本 / 素材 / 字幕 / BGM</div><div class="cval">人が触る前に、動画の構成要素が一通り揃った状態で出てくる。</div></div>
+      <div class="dcard"><div class="clbl">対応フォーマット</div><div class="cval">縦9:16（SNSショート）と横16:9(YouTube等)の両方に対応。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「テーマを渡せば、動画が出てくる」。編集前提の叩き台を最速で作る道具。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail vox" id="p3_4" data-sec="実践編・柱③">
+  <div class="eyebrow">生成ツール ② ・ 音声</div>
+  <h2 class="h-title">VoxCPM ─ 声を、デザインする</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">2</div><div class="nm">VoxCPM</div></div>
+        <div class="role">MULTILINGUAL VOICE ENGINE</div>
+        <div class="one">多言語対応の音声合成エンジン。新しい声をデザインすることも、本人そっくりの声まねもこなす、表現力の高い読み上げAI。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>多言語コンテンツのナレーション生成</li>
+          <li><span class="ic" data-icon="check"></span>キャラクター固有の声をデザインする</li>
+          <li><span class="ic" data-icon="check"></span>アクセシビリティ向けの読み上げ機能</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">2つの使い方</div><div class="big">デザイン / 声まね</div><div class="cval">新しい声を作る方向にも、特定の声を再現する方向にも振れる。</div></div>
+      <div class="dcard"><div class="clbl">特徴</div><div class="cval">多言語に対応。日本語コンテンツの海外展開や、翻訳ナレーションに有効。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「声を、選んで作れる」。読み上げから声優代替まで、表現の幅が広い。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail vt" id="p3_5" data-sec="実践編・柱③">
+  <div class="eyebrow">生成ツール ③ ・ キャラ会話</div>
+  <h2 class="h-title">Open-LLM-VTuber ─ AIに、顔と声を与える</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">3</div><div class="nm">Open-LLM-VTuber</div></div>
+        <div class="role">INTERACTIVE AI CHARACTER</div>
+        <div class="one">好きなAIモデルと声で会話できるVTuber。ハンズフリー・割り込み発話に対応し、Live2Dの顔がローカルで動く対話型キャラクター。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>配信・接客などキャラクター演出が必要な場面</li>
+          <li><span class="ic" data-icon="check"></span>音声で気軽に話せるAIアシスタント</li>
+          <li><span class="ic" data-icon="check"></span>イベント・ブランドキャラの試作</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">対話の自然さ</div><div class="big">ハンズフリー<br>割り込み発話対応</div><div class="cval">手を使わずに会話でき、相手の発話に割り込んでも自然に応答する。</div></div>
+      <div class="dcard"><div class="clbl">動作環境</div><div class="cval">Live2Dの顔がローカルで動作。外部サービスに依存せず手元で完結する。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「会話できるキャラ」。文字のAIに、表情と声と存在感を足す道具。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pDetail ocr" id="p3_6" data-sec="実践編・柱③">
+  <div class="eyebrow">生成ツール ④ ・ 文書化</div>
+  <h2 class="h-title">PaddleOCR ─ 紙やPDFを、AIの食材に変える</h2>
+  <div class="detail">
+    <div class="dleft">
+      <div class="dhero">
+        <div class="ehead"><div class="num">4</div><div class="nm">PaddleOCR</div></div>
+        <div class="role">DOCUMENT TO STRUCTURED DATA</div>
+        <div class="one">PDFや画像を、AIがそのまま扱える構造化データに変換するOCRツールキット。軽量で100言語以上に対応する、業務文書の入口。</div>
+      </div>
+      <div class="dfeat">
+        <div class="lbl">向いている使い方</div>
+        <ul>
+          <li><span class="ic" data-icon="check"></span>帳票・契約書を構造化してAIに渡す</li>
+          <li><span class="ic" data-icon="check"></span>紙の資料をデジタルナレッジ化する</li>
+          <li><span class="ic" data-icon="check"></span>多言語の文書を一括処理する</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dright">
+      <div class="dcard bigstat"><div class="clbl">対応言語</div><div class="big">100+ 言語</div><div class="cval">日本語・中国語・英語はもちろん、グローバル文書を幅広くカバーする。</div></div>
+      <div class="dcard"><div class="clbl">特徴</div><div class="cval">軽量で動かしやすく、業務システムやエージェントの前処理に組み込みやすい。</div></div>
+      <div class="dcard example"><div class="clbl">ひと言で</div><div class="cval">「文書をAIの食材に変える」。生成系の手前で効く、地味だが効果の大きい道具。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pMatrix" id="p3_7" data-sec="実践編・柱③">
+  <div class="eyebrow">どれを選ぶか</div>
+  <h2 class="h-title">作りたい「中身」から、ツールを選ぶ</h2>
+  <div class="table">
+    <div class="row head"><div>作りたい・解決したい</div><div>選ぶツール</div><div>効く理由</div></div>
+    <div class="row"><div class="case">SNS用の短尺動画を量産したい</div><div class="pick mp"><span class="chip">MoneyPrinterTurbo</span></div><div class="why">キーワードから台本・素材・字幕・BGMまで自動。9:16も対応。</div></div>
+    <div class="row"><div class="case">多言語ナレーションが欲しい</div><div class="pick vox"><span class="chip">VoxCPM</span></div><div class="why">多言語対応で、用途に応じた声を選んで生成できる。</div></div>
+    <div class="row"><div class="case">特定の声を再現したい</div><div class="pick vox"><span class="chip">VoxCPM</span></div><div class="why">本人そっくりの声まねモードに対応。音声ブランディングに使える。</div></div>
+    <div class="row"><div class="case">会話できるキャラが欲しい</div><div class="pick vt"><span class="chip">Open-LLM-VTuber</span></div><div class="why">Live2Dの顔と声、割り込み対話まで備える、表情を持つAI。</div></div>
+    <div class="row"><div class="case">紙やPDFをAIに読ませたい</div><div class="pick ocr"><span class="chip">PaddleOCR</span></div><div class="why">画像を構造化データに変換。100+言語対応で実務に強い。</div></div>
+  </div>
+  <div class="foot">生成系は組み合わせで広がる：PaddleOCRで素材化 → エージェントで要約 → MoneyPrinterTurboで動画化、のような流れが王道です。</div>
+</section>
+
+<section class="slide pClose" id="p3_8" data-sec="実践編・柱③">
+  <span class="blob a"></span><span class="blob b"></span>
+  <div class="badge" data-icon="listcheck"></div>
+  <h2>媒体に合う道具で、表現の手を増やす</h2>
+  <div class="chk">
+    <div><span class="ic" data-icon="check"></span>4ツールが扱う媒体の違いを言える</div>
+    <div><span class="ic" data-icon="check"></span>作りたい「中身」から逆算してツールを選べる</div>
+    <div><span class="ic" data-icon="check"></span>OCR → 生成 のつなぎ方を理解した</div>
+    <div><span class="ic" data-icon="check"></span>導入の前に、検証範囲を決めた</div>
+  </div>
+  <div class="pill">次は、応用編 ─ 組織への展開</div>
+</section>
+
+<!-- 応用編 -->
+<section class="slide" id="ap1" data-sec="応用編">
+  <span class="blob a"></span><span class="blob b"></span>
+  <div class="eyebrow">STEP 3 ・ 応用編</div>
+  <h1>個人技を、<br>チームの仕組みに変える。</h1>
+  <p class="sub">10ツールが揃っても、属人運用ではすぐに限界が来ます。<br>応用編では「分業・連携・標準化」の3視点で、組織で回す形に整えます。</p>
+  <p class="tag">AIチームを運営する時代へ</p>
+  <div class="badge" data-icon="shuffle"></div>
+</section>
+
+<section class="slide" id="ap2" data-sec="応用編">
+  <div class="eyebrow">応用編で扱う4つの柱</div>
+  <h2 class="h-title">「一回の工夫」を「続く仕組み」に</h2>
+  <div class="grid">
+    <div class="it"><div class="n">1</div><div><div class="tt">運用フローを描く</div><div class="dd">調査 → 整理 → 記憶 → 自動化の流れを設計する</div></div></div>
+    <div class="it"><div class="n">2</div><div><div class="tt">役割で分業する</div><div class="dd">情報収集・分析・開発・配信を担当ごとに割り当てる</div></div></div>
+    <div class="it"><div class="n">3</div><div><div class="tt">品質を担保する</div><div class="dd">AI収集 → 人レビュー → テンプレ共有の3段階で標準化</div></div></div>
+    <div class="it"><div class="n">4</div><div><div class="tt">アンチパターンを避ける</div><div class="dd">属人化・記録なし・ツール先行を防ぐ</div></div></div>
+  </div>
+</section>
+
+<section class="slide" id="ap3" data-sec="応用編">
+  <div class="eyebrow">① 運用フローを描く</div>
+  <h2 class="h-title">AIエージェント運用は、4工程に分かれる</h2>
+  <div class="flow">
+    <div class="node"><div class="nc">1</div><div class="nt">調査</div><div class="ntool">ネットを横断して<br>情報を集める<br>（Agent-Reach）</div></div>
+    <div class="sep">›</div>
+    <div class="node"><div class="nc">2</div><div class="nt">整理</div><div class="ntool">テーマを掘り、<br>根拠付きでまとめる<br>（last30days-skill）</div></div>
+    <div class="sep">›</div>
+    <div class="node"><div class="nc">3</div><div class="nt">記憶</div><div class="ntool">文脈とスキルを<br>セッション越しに残す<br>（hermes-agent）</div></div>
+    <div class="sep">›</div>
+    <div class="node"><div class="nc">4</div><div class="nt">自動化</div><div class="ntool">定期実行・配信を<br>仕組み化する<br>（テンプレ／配信）</div></div>
+  </div>
+  <div class="foot">1つのAIに全部やらせず、工程で分ける。前の出力をそのまま次に渡せる設計にしておくのがコツです。</div>
+</section>
+
+<section class="slide" id="ap4" data-sec="応用編">
+  <div class="eyebrow">② 役割で分業する</div>
+  <h2 class="h-title">チーム導入は、4つの担当に分ける</h2>
+  <div class="team">
+    <div class="role">
+      <div class="badge" data-icon="search"></div>
+      <div class="rh">情報収集担当</div>
+      <div class="rtools"><span>Agent-Reach</span></div>
+    </div>
+    <div class="role">
+      <div class="badge" data-icon="brain"></div>
+      <div class="rh">分析・記憶担当</div>
+      <div class="rtools"><span>hermes-agent</span></div>
+    </div>
+    <div class="role">
+      <div class="badge" data-icon="code"></div>
+      <div class="rh">開発・基盤担当</div>
+      <div class="rtools"><span>ECC</span><span>codegraph</span></div>
+    </div>
+    <div class="role">
+      <div class="badge" data-icon="megaphone"></div>
+      <div class="rh">配信・制作担当</div>
+      <div class="rtools"><span>MoneyPrinterTurbo</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="ap5" data-sec="応用編">
+  <div class="eyebrow">③ 品質を担保する</div>
+  <h2 class="h-title">「AI収集 → 人レビュー → テンプレ化」の3段階</h2>
+  <div class="three">
+    <div class="st"><div class="num">1</div><div class="stt">AIが収集する</div><div class="std">エージェントに調査・要約を任せ、初動の時間を一気に圧縮する。広く・浅くを高速で。</div></div>
+    <div class="st"><div class="num">2</div><div class="stt">人がレビューする</div><div class="std">数字・出典・トーンを人が必ず確認。最終的な正しさの責任は人にある、を共有する。</div></div>
+    <div class="st"><div class="num">3</div><div class="stt">テンプレ化して共有</div><div class="std">良かった手順はSkillとして残し、Git管理する。次から誰でも同じ品質で再現できる。</div></div>
+  </div>
+</section>
+
+<section class="slide" id="ap6" data-sec="応用編">
+  <div class="eyebrow">④ アンチパターンを避ける</div>
+  <h2 class="h-title">よくあるつまずきと、その直し方</h2>
+  <div class="cs">
+    <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">ツールから集める</div><div class="cd">流行ったから入れる、を繰り返すと使われない道具が増える。<b>課題から選ぶ。</b></div></div></div>
+    <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">全員が別運用</div><div class="cd">人によってプロンプトも手順もバラバラ。<b>テンプレ化して共有する。</b></div></div></div>
+    <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">記録を残さない</div><div class="cd">うまくいった手順が霧散する。<b>Skill化してGitで管理する。</b></div></div></div>
+    <div class="c"><div class="badge" data-icon="alert"></div><div><div class="ct">属人化する</div><div class="cd">担当者が抜けたら止まる運用は脆い。<b>Git管理で資産を引き継げる形に。</b></div></div></div>
+  </div>
+</section>
+
+<section class="slide" id="ap7" data-sec="応用編">
+  <div class="eyebrow">3ツールが要</div>
+  <h2 class="h-title">ECC × Hermes-Agent × Agent-Reach を組み合わせる</h2>
+  <div class="stack">
+    <div class="layer">
+      <div class="lh">L1 ・ 環境を揃える</div>
+      <div class="ln">ECC</div>
+      <div class="ld">チームの開発エージェント環境をスキル・記憶・セキュリティ込みで標準化。土台を共有資産にする。</div>
+    </div>
+    <div class="layer">
+      <div class="lh">L2 ・ 知性を持たせる</div>
+      <div class="ln">hermes-agent</div>
+      <div class="ld">業務文脈を学習させ、セッションをまたいで記憶。チームの問いに常駐して答える"脳"を作る。</div>
+    </div>
+    <div class="layer">
+      <div class="lh">L3 ・ 目を開く</div>
+      <div class="ln">Agent-Reach</div>
+      <div class="ld">外の情報を横断で集める"目"を渡す。3つを重ねると、調査→記憶→展開のループが回り始める。</div>
+    </div>
+  </div>
+  <div class="foot">単体導入よりも、3つを重ねたときの相乗効果が大きい。応用編の出発点に推奨です。</div>
+</section>
+
+<section class="slide" id="ap8" data-sec="応用編">
+  <span class="blob a"></span><span class="blob b"></span>
+  <div class="badge" data-icon="listcheck"></div>
+  <h2>個人技から、AIチーム運営へ</h2>
+  <div class="chk">
+    <div><span class="ic" data-icon="check"></span>運用フロー（調査→整理→記憶→自動化）を設計できる</div>
+    <div><span class="ic" data-icon="check"></span>役割で分業し、担当ごとにツールを割り当てた</div>
+    <div><span class="ic" data-icon="check"></span>AI収集→人レビュー→テンプレ化を回せる</div>
+    <div><span class="ic" data-icon="check"></span>属人化させず、Git管理で資産化できる</div>
+  </div>
+  <div class="pill">10ツールは、組み合わせて真価が出る</div>
+</section>
+
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="controls">
+  <button id="home" aria-label="目次へ">≡</button>
+  <button id="prev" aria-label="前のスライド">‹</button>
+  <span class="counter" id="counter">目次</span>
+  <button id="next" aria-label="次のスライド">›</button>
+  <button id="fs" aria-label="全画面">⤢</button>
+</div>
+<div class="hint">← → / スペースキーでめくる ・ クリックで次へ ・ ≡ で目次</div>
+
+<script>
+const ICONS = {
+  compass:'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+  message:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/>',
+  cpu:'<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>',
+  frown:'<circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  smile:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  dash:'<line x1="5" y1="12" x2="19" y2="12"/>',
+  alert:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  seedling:'<path d="M12 22V8"/><path d="M5 12c0-3.3 3-6 7-6"/><path d="M19 12c0-3.3-3-6-7-6"/><path d="M12 14c-3 0-6 1.5-6 5"/><path d="M12 14c3 0 6 1.5 6 5"/>',
+  bookmark:'<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+  listcheck:'<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
+  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  video:'<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+  shuffle:'<path d="M18 4l3 3-3 3"/><path d="M18 20l3-3-3-3"/><path d="M3 7h3a5 5 0 0 1 4 2l4 6a5 5 0 0 0 4 2h3"/><path d="M3 17h3a5 5 0 0 0 4-2l.5-.75"/><path d="M21 7h-3a5 5 0 0 0-4 2l-.5.75"/>',
+  brain:'<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>',
+  code:'<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+  megaphone:'<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>'
+};
+document.querySelectorAll('[data-icon]').forEach(el=>{
+  const n=el.getAttribute('data-icon'); if(!ICONS[n])return;
+  el.innerHTML=`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${ICONS[n]}</svg>`;
+});
+
+const slides=Array.from(document.querySelectorAll('.slide'));
+const counter=document.getElementById('counter');
+const dotsWrap=document.getElementById('dots');
+
+const secOf=slides.map(s=>s.dataset.sec);
+const secTotal={}; secOf.forEach(n=>secTotal[n]=(secTotal[n]||0)+1);
+const within=[]; const seen={};
+secOf.forEach((n,i)=>{seen[n]=(seen[n]||0)+1; within[i]=seen[n];});
+
+let cur=0;
+slides.forEach((s,i)=>{
+  const d=document.createElement('span');
+  if(s.dataset.sec==='目次') d.classList.add('sec0');
+  d.addEventListener('click',e=>{e.stopPropagation();go(i);});
+  dotsWrap.appendChild(d);
+});
+const dots=Array.from(dotsWrap.children);
+
+function label(i){
+  const sec=secOf[i];
+  if(sec==='目次') return '目次';
+  return sec+'　'+within[i]+' / '+secTotal[sec];
+}
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,idx)=>s.classList.toggle('active',idx===cur));
+  dots.forEach((d,idx)=>d.classList.toggle('on',idx===cur));
+  counter.textContent=label(cur);
+}
+function next(){go(cur+1);} function prev(){go(cur-1);}
+function jumpToId(id){const t=document.getElementById(id); if(t) go(slides.indexOf(t));}
+window.go=go; window.jumpToId=jumpToId;
+
+document.querySelectorAll('#c0 .tcard').forEach(btn=>{
+  btn.addEventListener('click',e=>{e.stopPropagation(); jumpToId(btn.dataset.go);});
+});
+
+document.getElementById('next').addEventListener('click',e=>{e.stopPropagation();next();});
+document.getElementById('prev').addEventListener('click',e=>{e.stopPropagation();prev();});
+document.getElementById('home').addEventListener('click',e=>{e.stopPropagation();go(0);});
+document.getElementById('fs').addEventListener('click',e=>{e.stopPropagation();
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();});
+document.getElementById('stage').addEventListener('click',next);
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();prev();}
+  else if(e.key==='Home')go(0); else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F')document.getElementById('fs').click();
+});
+go(0);
+</script>
+</body>
+</html>
