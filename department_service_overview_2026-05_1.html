@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>事業部サービス一覧（2026年5月）</title>
+<style>
+  :root{
+    --bg:#EAEEF3; --panel:#FFFFFF; --ink:#16263A; --muted:#64748B; --line:#E2E8F0; --line2:#EDF1F5;
+    --navy:#16263A; --navy2:#223850;
+    --c1:#2563EB; --c1b:#E5EDFD;   /* Switch  遊技データ分析 */
+    --c2:#5B9DF0; --c2b:#E9F2FE;   /* Switchフル 遊技データ分析 */
+    --c3:#0EA5A4; --c3b:#E0F5F4;   /* Luplus  新台入替管理 */
+    --c4:#7C5CE0; --c4b:#EEE9FB;   /* βシステム 全国稼働分析 */
+    --c5:#F59E0B; --c5b:#FCEFD6;   /* zizai   イベント効果測定 */
+    --c6:#EF476F; --c6b:#FCE2E8;   /* Media   来店人数データ */
+    --accent:#22D3A6;              /* EP-Buzz */
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{background:#0e1a28;
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","YuGothic",Meiryo,"Noto Sans JP",sans-serif;
+    color:var(--ink); display:flex; align-items:center; justify-content:center; min-height:100vh; overflow:hidden; -webkit-font-smoothing:antialiased;}
+  .stage{position:relative; width:min(100vw,177.78vh); aspect-ratio:16/9; background:var(--bg);
+    box-shadow:0 24px 80px rgba(0,0,0,.45); border-radius:6px; overflow:hidden;}
+  .slide{container-type:size; position:absolute; inset:0; padding:3cqw 3.2cqw; display:flex; flex-direction:column; gap:1.5cqh;}
+
+  /* ===== header ===== */
+  .head{display:flex; align-items:flex-end; justify-content:space-between; gap:2cqw;}
+  .head .ttl{font-size:2.9cqw; font-weight:800; letter-spacing:.01em; line-height:1.1;}
+  .head .ttl .eb{display:block; font-size:1.1cqw; font-weight:700; letter-spacing:.18em; color:var(--c1); margin-bottom:.5cqw;}
+  .head .meta{font-size:1.15cqw; color:var(--muted); margin-top:.7cqw;}
+  .total{display:flex; align-items:baseline; gap:.7cqw; background:var(--navy); color:#fff; padding:1.1cqw 1.8cqw; border-radius:1cqw; box-shadow:0 .6cqw 1.6cqw rgba(22,38,58,.25); white-space:nowrap;}
+  .total .lb{font-size:1.05cqw; color:#9DB2C9; font-weight:600; letter-spacing:.08em;}
+  .total .big{font-size:2.8cqw; font-weight:800; color:#fff; letter-spacing:.01em;}
+  .total .u{font-size:1.2cqw; font-weight:700; color:var(--accent);}
+  .total .yen{font-size:1cqw; color:#7E94AC; margin-left:.4cqw;}
+
+  /* ===== section eyebrow ===== */
+  .sec-h{display:flex; align-items:center; gap:.8cqw; margin-bottom:.9cqh;}
+  .sec-h .bar{width:.45cqw; height:1.7cqw; border-radius:1cqw; background:var(--c1);}
+  .sec-h .lab{font-size:1.25cqw; font-weight:800; color:var(--ink);}
+  .sec-h .note{font-size:1.02cqw; color:var(--muted); margin-left:.3cqw;}
+
+  /* ===== 6-col grids (sales + services aligned) ===== */
+  .grid6{display:grid; grid-template-columns:repeat(6,1fr); gap:1.1cqw;}
+
+  /* sales cards */
+  .sales{flex:none;}
+  .scard{background:var(--panel); border-radius:.9cqw; padding:1.2cqw 1.2cqw 1cqw; box-shadow:0 .4cqw 1.1cqw rgba(22,38,58,.07); border-top:.4cqw solid var(--cc); display:flex; flex-direction:column;}
+  .scard .nm{font-size:1.18cqw; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:.5cqw;}
+  .scard .nm .dot{width:.85cqw;height:.85cqw;border-radius:50%;background:var(--cc);flex:none;}
+  .scard .amt{display:flex; align-items:baseline; gap:.3cqw; margin-top:.5cqw;}
+  .scard .amt .n{font-size:2.05cqw; font-weight:800; color:var(--ink); letter-spacing:-.01em;}
+  .scard .amt .u{font-size:1cqw; font-weight:700; color:var(--muted);}
+
+  /* services */
+  .svc{flex:1; min-height:0;}
+  .svc .grid6{height:100%;}
+  .vcard{background:var(--panel); border-radius:.9cqw; padding:1.1cqw 1.1cqw; box-shadow:0 .4cqw 1.1cqw rgba(22,38,58,.07); border-left:.4cqw solid var(--cc); display:flex; flex-direction:column; min-height:0;}
+  .vcard .tag{align-self:flex-start; font-size:.92cqw; font-weight:700; color:var(--cc); background:var(--ccb); padding:.35cqw .75cqw; border-radius:.5cqw;}
+  .vcard .fmt{font-size:.88cqw; color:var(--muted); margin-top:.55cqw; font-weight:600;}
+  .vcard .desc{font-size:1.02cqw; color:var(--ink); line-height:1.5; margin-top:.6cqw; flex:1;}
+  .vcard .tgt{font-size:.9cqw; color:var(--muted); margin-top:.6cqw; padding-top:.6cqw; border-top:1px solid var(--line2); display:flex; align-items:center; gap:.45cqw;}
+  .vcard .tgt b{color:var(--ink); font-weight:700;}
+
+  .p1{--cc:var(--c1);--ccb:var(--c1b);} .p2{--cc:var(--c2);--ccb:var(--c2b);}
+  .p3{--cc:var(--c3);--ccb:var(--c3b);} .p4{--cc:var(--c4);--ccb:var(--c4b);}
+  .p5{--cc:var(--c5);--ccb:var(--c5b);} .p6{--cc:var(--c6);--ccb:var(--c6b);}
+
+  /* ===== future : EP-Buzz ===== */
+  .future{flex:none; margin-top:.6cqh; background:linear-gradient(110deg,var(--navy) 0%,var(--navy2) 100%); border-radius:1cqw; padding:1.25cqw 1.8cqw; display:flex; align-items:center; gap:2cqw; position:relative; overflow:hidden; box-shadow:0 .8cqw 2cqw rgba(22,38,58,.28);}
+  .future::after{content:""; position:absolute; right:-6cqw; top:-8cqw; width:22cqw; height:22cqw; border-radius:50%; background:rgba(34,211,166,.12);}
+  .future .left{flex:none; max-width:34cqw; position:relative; z-index:1;}
+  .future .badge{display:inline-flex; align-items:center; gap:.5cqw; font-size:.92cqw; font-weight:800; letter-spacing:.1em; color:var(--navy); background:var(--accent); padding:.35cqw .9cqw; border-radius:.5cqw;}
+  .future .fname{font-size:2.4cqw; font-weight:800; color:#fff; margin-top:.6cqw; line-height:1;}
+  .future .fcat{font-size:1.02cqw; font-weight:700; color:var(--accent); margin-top:.55cqw;}
+  .future .mid{flex:1; position:relative; z-index:1;}
+  .future .fdesc{font-size:1.08cqw; color:#D6E0EC; line-height:1.55;}
+  .future .pts{display:flex; flex-wrap:wrap; gap:.6cqw; margin-top:.9cqw;}
+  .future .pts span{font-size:.95cqw; font-weight:600; color:#EAF1F8; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.16); padding:.4cqw .85cqw; border-radius:3cqw;}
+  .future .pts span::before{content:"✓ "; color:var(--accent); font-weight:800;}
+
+  /* ===== mobile portrait ===== */
+  @media (max-width:680px) and (orientation:portrait){
+    body{align-items:stretch; overflow:auto; background:var(--bg);}
+    .stage{width:100vw; height:auto; min-height:100dvh; aspect-ratio:auto; border-radius:0; box-shadow:none;}
+    .slide{position:relative; inset:auto; padding:18px 14px calc(env(safe-area-inset-bottom,0px) + 18px); gap:18px; container-type:normal;}
+    .head{flex-direction:column; align-items:flex-start; gap:12px;}
+    .head .ttl{font-size:21px;} .head .ttl .eb{font-size:10px; margin-bottom:4px;}
+    .head .meta{font-size:12px; margin-top:4px;}
+    .total{align-self:stretch; justify-content:center; padding:12px 16px; border-radius:12px;}
+    .total .lb{font-size:11px;} .total .big{font-size:26px;} .total .u{font-size:13px;} .total .yen{font-size:11px;}
+    .sec-h{margin-bottom:10px;} .sec-h .bar{width:4px;height:16px;} .sec-h .lab{font-size:14px;} .sec-h .note{font-size:11px;}
+    .grid6{grid-template-columns:repeat(2,1fr); gap:10px;}
+    .scard{padding:12px; border-top-width:4px; border-radius:10px;}
+    .scard .nm{font-size:13px;} .scard .nm .dot{width:8px;height:8px;}
+    .scard .amt .n{font-size:22px;} .scard .amt .u{font-size:11px;}
+    .svc .grid6{grid-template-columns:1fr; height:auto;}
+    .vcard{padding:13px 15px; border-left-width:4px; border-radius:10px;}
+    .vcard .tag{font-size:11px; padding:4px 9px;}
+    .vcard .fmt{font-size:11px; margin-top:6px;}
+    .vcard .desc{font-size:13.5px; margin-top:7px; line-height:1.55;}
+    .vcard .tgt{font-size:11.5px; margin-top:8px; padding-top:8px;}
+    .future{flex-direction:column; align-items:flex-start; gap:14px; padding:18px; border-radius:14px;}
+    .future .left{max-width:none;}
+    .future .badge{font-size:10px; padding:4px 10px;}
+    .future .fname{font-size:26px; margin-top:8px;}
+    .future .fcat{font-size:12px; margin-top:6px;}
+    .future .fdesc{font-size:13.5px;}
+    .future .pts{gap:7px; margin-top:10px;}
+    .future .pts span{font-size:11.5px; padding:5px 10px;}
+    .future::after{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="slide">
+
+    <!-- ===== header ===== -->
+    <header class="head">
+      <div>
+        <div class="ttl"><span class="eb">DEPARTMENT SERVICE OVERVIEW</span>事業部サービス一覧</div>
+        <div class="meta">2026年5月 ｜ 事業部MTG ／ 売上構成と自社サービスの概要</div>
+      </div>
+      <div class="total">
+        <span class="lb">5月 売上合計</span>
+        <span class="big">3,578.5</span><span class="u">万円</span>
+        <span class="yen">¥35,785,000</span>
+      </div>
+    </header>
+
+    <!-- ===== 上段：商材別売上 ===== -->
+    <section class="sales">
+      <div class="sec-h"><span class="bar"></span><span class="lab">商材別売上</span><span class="note">2026年5月実績</span></div>
+      <div class="grid6">
+        <div class="scard p1"><div class="nm"><span class="dot"></span>Switch</div><div class="amt"><span class="n">1,396</span><span class="u">万円</span></div></div>
+        <div class="scard p2"><div class="nm"><span class="dot"></span>Switchフル</div><div class="amt"><span class="n">270</span><span class="u">万円</span></div></div>
+        <div class="scard p3"><div class="nm"><span class="dot"></span>Luplus</div><div class="amt"><span class="n">32.5</span><span class="u">万円</span></div></div>
+        <div class="scard p4"><div class="nm"><span class="dot"></span>βシステム</div><div class="amt"><span class="n">70</span><span class="u">万円</span></div></div>
+        <div class="scard p5"><div class="nm"><span class="dot"></span>zizai</div><div class="amt"><span class="n">310</span><span class="u">万円</span></div></div>
+        <div class="scard p6"><div class="nm"><span class="dot"></span>Media</div><div class="amt"><span class="n">1,500</span><span class="u">万円</span></div></div>
+      </div>
+    </section>
+
+    <!-- ===== 中段：サービス概要 ===== -->
+    <section class="svc">
+      <div class="sec-h"><span class="bar" style="background:var(--c3)"></span><span class="lab">サービス概要</span><span class="note">既存6商材</span></div>
+      <div class="grid6">
+        <div class="vcard p1">
+          <span class="tag">遊技データ分析</span>
+          <div class="fmt">スプレッドシート</div>
+          <div class="desc">1店舗・1日の遊技データに各種情報を掛け合わせ、売上や稼働状況を閲覧。</div>
+          <div class="tgt">対象：<b>1店舗契約が主</b></div>
+        </div>
+        <div class="vcard p2">
+          <span class="tag">遊技データ分析</span>
+          <div class="fmt">Webアプリケーション</div>
+          <div class="desc">Switchの内容をWeb上で閲覧できる版。売上・稼働をブラウザで確認。</div>
+          <div class="tgt">対象：<b>1契約単位</b></div>
+        </div>
+        <div class="vcard p3">
+          <span class="tag">新台入替管理</span>
+          <div class="fmt">Webサイト</div>
+          <div class="desc">新台入替情報を管理し、店舗の機種がどう入れ替わったかを追える。</div>
+          <div class="tgt">対象：<b>店舗・入替情報管理</b></div>
+        </div>
+        <div class="vcard p4">
+          <span class="tag">全国稼働分析</span>
+          <div class="fmt">管理システム</div>
+          <div class="desc">新台機種の全国稼働数値を管理。主に遊技機メーカー向けに提供。</div>
+          <div class="tgt">対象：<b>遊技機メーカー</b></div>
+        </div>
+        <div class="vcard p5">
+          <span class="tag">イベント効果測定</span>
+          <div class="fmt">データ活用支援</div>
+          <div class="desc">Zizai実施のパチンコイベントの効果測定・記事化に遊技データを活用。</div>
+          <div class="tgt">対象：<b>イベント実施会社</b></div>
+        </div>
+        <div class="vcard p6">
+          <span class="tag">来店人数データ</span>
+          <div class="fmt">計測データ商材</div>
+          <div class="desc">1店舗の日中の来店人数を測定したデータを提供。</div>
+          <div class="tgt">対象：<b>最大1,500店舗</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 下段：今後の商材 EP-Buzz ===== -->
+    <section class="future">
+      <div class="left">
+        <span class="badge">今後の商材 ／ NEW</span>
+        <div class="fname">EP-Buzz</div>
+        <div class="fcat">イベント管理 × 遊技データ連携</div>
+      </div>
+      <div class="mid">
+        <div class="fdesc">パチンコ店が実施するイベントのスケジュールや内容を管理し、遊技データと連携して費用対効果や影響を測定できる商材。</div>
+        <div class="pts">
+          <span>イベントスケジュール管理</span>
+          <span>イベント内容管理</span>
+          <span>遊技データ連携</span>
+          <span>費用対効果・影響測定</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+</body>
+</html>
